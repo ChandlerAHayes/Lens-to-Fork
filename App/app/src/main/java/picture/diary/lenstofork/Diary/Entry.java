@@ -68,8 +68,8 @@ public class Entry {
 
         //------ Compare attributes
         Entry entry = (Entry) obj;
-        return filepath.equals(((Entry) obj).getImageFilePath()) && title.equals(((Entry) obj)
-                .getTitle()) && note.equals(((Entry) obj).getNote())
-                && id.equals(((Entry) obj).getId());
+        return ( filepath.equals(((Entry) obj).getImageFilePath()) && title.equals(((Entry) obj)
+                .getTitle()) && note.equals(((Entry) obj).getNote()) )
+                || id.equals(((Entry) obj).getId());
     }
 }

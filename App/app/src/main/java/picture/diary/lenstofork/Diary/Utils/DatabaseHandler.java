@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import picture.diary.lenstofork.Diary.Entry;
@@ -81,6 +82,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addEntries(EntryHandler handler){
         SQLiteDatabase db = this.getWritableDatabase();
 
+
         Entry[] entries = handler.getEntries();
         Long[] entryIDs = new Long[6];
 
@@ -104,12 +106,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             if(entryIDs == null){
                 break;
             }
-            valuesHandler.put("ENTRY" + i, entryIDs[i]);
+            valuesHandler.put("entry" + i, entryIDs[i]);
         }
 
         // insert row and close database connection
         db.insert(TABLE_ENTRY_HANDLER, null, valuesHandler);
-        db.close(); // Closing database connection
 
         // update entries to have ids
         handler.updateEntries(entryIDs);
@@ -137,8 +138,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public EntryHandler getEntryHandler(String dateStr){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY1, KEY_ENTRY2,
-                        KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5, KEY_ENTRY0}, KEY_DATE + "=?",
+        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY0, KEY_ENTRY1,
+                        KEY_ENTRY2, KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5}, KEY_DATE + "=?",
                 new String[]{dateStr}, null, null, null, null);
 
         // get the handler with its ID references to all of its entries
@@ -154,7 +155,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 handler.addEntry(currentEntry);
                 pos++;
             }
-            db.close();
 
             return handler;
         }
@@ -187,12 +187,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String title = cursor.getString(2);
             String note = cursor.getString(3);
 
-            db.close(); // Closing database connection
-            db.close();
             return new Entry(id, img, title, note);
         }
         else{
-            db.close();
             return null;
         }
 
@@ -231,7 +228,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while(cursor.moveToNext());
         }
 
-        db.close(); // Closing database connection
         return handlerList;
     }
     public List<Entry> getAllEntries(){
@@ -249,7 +245,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 list.add(new Entry(img, title, note));
             } while(cursor.moveToNext());
         }
-        db.close();
         return list;
     }
 
@@ -275,8 +270,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String date = handler.getStringDate();
         db.delete(TABLE_ENTRY_HANDLER, KEY_DATE + "=?", new String[]
                 {date});
-
-        db.close();
     }
 
     /**
@@ -291,4 +284,67 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     //------- Update Entries
+
+    /**
+     *
+     * @return
+     */
+    public int updateEntryHandler(EntryHandler handler){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        //------ Compare Old Entries with New Entries
+        EntryHandler oldHandler = getEntryHandler(handler.getStringDate());
+        ArrayList<Entry> oldEntries = new ArrayList<>(Arrays.asList(oldHandler.getEntries()));
+        ArrayList<Entry> newEntries = new ArrayList<>(Arrays.asList(handler.getEntries()));
+
+        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+            // if oldEntry is not in the newEntries list, delete it from the Entry table
+            Entry oldEntry = oldEntries.get(i);
+            if(!newEntries.contains(oldEntry)){
+                deleteEntry(oldEntry, db);
+            }else{
+                Entry newEntry = newEntries.get(i);
+                if(newEntry != null){
+                    if(oldEntries.contains(newEntry)){
+                        // update the entry in the Entry table
+                        updateEntry(newEntry, db);
+                    }
+                    else{
+                        // add the entry to the Entry table
+                        newEntry.setId(addEntry(newEntry, db));
+                    }
+                }
+                else{
+                    // it's null can't do anything
+                    continue;
+                }
+            }
+
+            // put the current position form the newEntries list into values
+            values.put("entry"+i, newEntries.get(i).getId());
+        }
+
+        return db.update(TABLE_ENTRY_HANDLER, values, KEY_DATE + " =?",
+                new String[]{handler.getStringDate()});
+    }
+
+    /**
+     * Updates the values for an Entry row item using the given entry.
+     *
+     * @param entry the entry
+     * @param db the open connection to the database
+     * @return number of rows affected
+     */
+    private int updateEntry(Entry entry, SQLiteDatabase db){
+        // update the entry's attributes in the database
+        ContentValues values = new ContentValues();
+        values.put(KEY_IMG, entry.getImageFilePath());
+        values.put(KEY_TITLE, entry.getTitle());
+        values.put(KEY_NOTE, entry.getNote());
+
+        // update row
+        return db.update(TABLE_ENTRY, values, KEY_ID + "=?",
+                new String[]{String.valueOf(entry.getId())});
+    }
 }
