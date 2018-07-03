@@ -56,15 +56,15 @@ public class DiaryActivity extends AppCompatActivity {
         // Add to database
         DatabaseHandler dbHandler = new DatabaseHandler(this);
 
-        dbHandler.addEntries(handler0);
-
-        Entry entry2New = new Entry("*******", "********", "*********");
-        handler0.updateEntry(2, entry2New);
-        dbHandler.updateEntryHandler(handler0);
-
         List<EntryHandler> list = dbHandler.getAllEntryHandlers();
         List<Entry> list1 = dbHandler.getAllEntries();
 
+        dbHandler.addEntries(handler0);
+        dbHandler.deleteEntryHandler(handler0);
+
+        list = dbHandler.getAllEntryHandlers();
+        list1 = dbHandler.getAllEntries();
+        int x=0;
     }
 }
 

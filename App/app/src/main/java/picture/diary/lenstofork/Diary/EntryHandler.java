@@ -43,6 +43,7 @@ public class EntryHandler implements Serializable {
         }
     }
 
+    //-------- Handling Entries
     /**
      * Adds a new entry to the EntryHandler. If the limit of 6 entries has been reached, then
      * the method will return false.
@@ -121,6 +122,12 @@ public class EntryHandler implements Serializable {
         }
     }
 
+    /**
+     * Updates the changes that occurred in a specific entry.
+     *
+     * @param position the position of the entry that needs to be updated
+     * @param entry the entry that has changed
+     */
     public void updateEntry(int position, Entry entry){
         entries[position] = entry;
     }

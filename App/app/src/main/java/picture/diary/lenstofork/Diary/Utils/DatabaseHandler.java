@@ -86,26 +86,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Entry[] entries = handler.getEntries();
         Long[] entryIDs = new Long[6];
 
-        //------- Add Entry objects that are held within the EntryHandler to the Entry table
-        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-            // stop when all of the entries are made but have not reached the Entry limit
-            if(entries[i] == null){
-                break;
-            }
-
-           //make new row in Entry table
-            entryIDs[i] = addEntry(entries[i], db);
-        }
-
         // make a new row in the Handler table
         ContentValues valuesHandler = new ContentValues();
         valuesHandler.put(KEY_DATE, handler.getStringDate());
 
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
             // stop when all of the entries are made but have not reached the Entry limit
-            if(entryIDs == null){
+            if(entries[i] == null){
                 break;
             }
+
+            entryIDs[i] = addEntry(entries[i], db);
             valuesHandler.put("entry" + i, entryIDs[i]);
         }
 
@@ -124,7 +115,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_NOTE, entry.getNote());
 
         //insert row and save the id in the entryIDs variables
-        return db.insert(TABLE_ENTRY, null, values);
+        long id = db.insert(TABLE_ENTRY, null, values);
+        return id;
     }
 
     //------- Getting Data from the Database
@@ -148,7 +140,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             EntryHandler handler = new EntryHandler(dateStr);
 
             // get all of the entries associated with the handler and add it to the handler obj
-            int pos = 1; // pos 1 is the position of the first entry
+            int pos = 1; // pos 1 is the position of the first entry (entry0)
             while(cursor.getString(pos) != null && pos < 7){
                 long entryID = cursor.getLong(pos);
                 Entry currentEntry = getEntry(entryID);
@@ -178,11 +170,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_ID, KEY_IMG, KEY_TITLE, KEY_NOTE}, KEY_ID + "=?",
                 new String[] { String.valueOf(id) },
                 null, null, null, null);
-        int x = cursor.getCount();
 
-        if(cursor != null){
-            cursor.moveToFirst();
-
+        if(cursor.moveToFirst()){
             String img = cursor.getString(1);
             String title = cursor.getString(2);
             String note = cursor.getString(3);
@@ -212,7 +201,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do{
                 String date = cursor.getString(0);
                 EntryHandler handler = new EntryHandler(date);
-                Long[] entryIDs = new Long[6];
 
                 // get all of the entries associated with the handler & add it to the handler object
                 int pos = 1;
@@ -230,6 +218,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return handlerList;
     }
+
+    /**
+     * Returns all of the entries from the Entry table
+     *
+     * @return
+     */
     public List<Entry> getAllEntries(){
         List<Entry> list = new ArrayList<Entry>();
 
@@ -239,10 +233,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()){
             do{
+                /**
+                 * Column indices:
+                 * 0 --> id
+                 * 1 --> image file path
+                 * 2 --> title
+                 * 3 --> note
+                 */
+
+                Long id = cursor.getLong(0);
                 String img = cursor.getString(1);
                 String title = cursor.getString(2);
                 String note = cursor.getString(3);
-                list.add(new Entry(img, title, note));
+                Entry entry = new Entry(id, img, title, note);
+                list.add(entry);
             } while(cursor.moveToNext());
         }
         return list;
@@ -298,31 +302,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<Entry> oldEntries = new ArrayList<>(Arrays.asList(oldHandler.getEntries()));
         ArrayList<Entry> newEntries = new ArrayList<>(Arrays.asList(handler.getEntries()));
 
-        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-            // if oldEntry is not in the newEntries list, delete it from the Entry table
-            Entry oldEntry = oldEntries.get(i);
-            if(!newEntries.contains(oldEntry)){
-                deleteEntry(oldEntry, db);
-            }else{
-                Entry newEntry = newEntries.get(i);
-                if(newEntry != null){
-                    if(oldEntries.contains(newEntry)){
-                        // update the entry in the Entry table
-                        updateEntry(newEntry, db);
-                    }
-                    else{
-                        // add the entry to the Entry table
-                        newEntry.setId(addEntry(newEntry, db));
-                    }
-                }
-                else{
-                    // it's null can't do anything
-                    continue;
-                }
-            }
+//        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+//            // if oldEntry is not in the newEntries list, delete it from the Entry table
+//            Entry oldEntry = oldEntries.get(i);
+//            Entry newEntry = newEntries.get(i);
+//            if(newEntry == null && oldEntry == null){
+//                // do nothing b/c both entries are null
+//                continue;
+//            }
+//            else if(newEntry == null && oldEntry != null){
+//                // delete old entry because it should be null
+//                deleteEntry(oldEntry, db);
+//            }
+//            else if(oldEntry == null && newEntry != null){
+//                // add the entry to the Entry table
+//                newEntry.setId(addEntry(newEntry, db));
+//            }
+//            else {
+//                // delete the removed entry from the Entry table & add the new entry
+//                if(!newEntries.contains(oldEntry)){
+//                    deleteEntry(oldEntry, db);
+//                    // add the entry to the Entry table
+//                    long newID = addEntry(newEntries.get(i), db);
+//                    newEntries.get(i).setId(newID);
+//                }
+//                // update the changed entry
+//                else if(oldEntries.contains(newEntry)){
+//                    // update the entry in the Entry table
+//                    updateEntry(newEntry, db);
+//                }
+//            }
+//
+//            // put the current position form the newEntries list into values
+//            if(newEntries.get(i) != null){
+//                values.put("entry"+i, newEntries.get(i).getId());
+//            }
+//        }
 
-            // put the current position form the newEntries list into values
-            values.put("entry"+i, newEntries.get(i).getId());
+        // delete old entries and add new entries
+        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+            if(oldEntries.get(i) != null){
+                deleteEntry(oldEntries.get(i), db);
+            }
+            if(newEntries.get(i) != null){
+                newEntries.get(i).setId(addEntry(newEntries.get(i), db));
+                values.put("entry"+i, newEntries.get(i).getId());
+            }
         }
 
         return db.update(TABLE_ENTRY_HANDLER, values, KEY_DATE + " =?",
