@@ -148,9 +148,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 pos++;
             }
 
+            cursor.close();
             return handler;
         }
         else{
+            cursor.close();
             return null;
         }
 
@@ -176,9 +178,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String title = cursor.getString(2);
             String note = cursor.getString(3);
 
+            cursor.close();
             return new Entry(id, img, title, note);
         }
         else{
+            cursor.close();
             return null;
         }
 
@@ -216,6 +220,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while(cursor.moveToNext());
         }
 
+        cursor.close();
         return handlerList;
     }
 
@@ -249,6 +254,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 list.add(entry);
             } while(cursor.moveToNext());
         }
+        cursor.close();
         return list;
     }
 
@@ -371,5 +377,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // update row
         return db.update(TABLE_ENTRY, values, KEY_ID + "=?",
                 new String[]{String.valueOf(entry.getId())});
+    }
+
+    //-------- Miscellaneous Methods
+    public boolean doesEntryHandlerExist(String dateStr){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY0, KEY_ENTRY1,
+                        KEY_ENTRY2, KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5}, KEY_DATE + "=?",
+                new String[]{dateStr}, null, null, null, null);
+        boolean doesExists = cursor.getCount() > 0;
+        cursor.close();
+        return doesExists;
     }
 }

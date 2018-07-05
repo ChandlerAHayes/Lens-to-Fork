@@ -1,8 +1,11 @@
 package picture.diary.lenstofork.Diary;
 
+import android.graphics.drawable.Drawable;
+
 public class Entry {
     private  Long id;
     private String filepath;
+    private Drawable img;
     private String title;
     private  String note;
 
@@ -28,6 +31,10 @@ public class Entry {
     //-------- Setter & Getters
     public void setImageFilePath(String image) {
         this.filepath = image;
+    }
+
+    public Drawable getImage(){
+        return img;
     }
 
     public String getTitle() {

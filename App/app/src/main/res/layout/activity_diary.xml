@@ -11,6 +11,7 @@
     tools:context=".Diary.DiaryActivity">
 
     <!-- Toolbar -->
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -19,35 +20,49 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:titleTextColor="@android:color/white" />
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tab_layout"
+    <RelativeLayout
+        android:id="@+id/tab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
         android:background="@color/colorPrimary"
-        app:tabSelectedTextColor="@android:color/white"
-        app:tabTextColor="@android:color/white">
+        android:orientation="horizontal">
 
-        <android.support.design.widget.TabItem
-            android:id="@+id/left_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <android.support.design.widget.TabItem
-            android:id="@+id/tabItem2"
+        <ImageView
+            android:id="@+id/img_left_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TOday" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            app:srcCompat="@drawable/ic_keyboard_arrow_left_black_24dp" />
 
-        <android.support.design.widget.TabItem
-            android:id="@+id/tabItem3"
+        <TextView
+            android:id="@+id/txt_title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </android.support.design.widget.TabLayout>
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp"
+            android:text="Today"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
+        <ImageView
+            android:id="@+id/img_right_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp" />
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tab"></FrameLayout>
+
 
 </RelativeLayout>

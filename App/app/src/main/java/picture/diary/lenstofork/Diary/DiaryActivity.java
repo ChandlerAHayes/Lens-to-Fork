@@ -1,22 +1,27 @@
 package picture.diary.lenstofork.Diary;
 
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
+import picture.diary.lenstofork.Diary.Utils.FragmentController;
 import picture.diary.lenstofork.R;
 
 public class DiaryActivity extends AppCompatActivity {
     // widgets
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
+    private ImageView leftArrow;
+    private ImageView rightArrow;
+    private TextView dateText;
+
+    // other variables
+    private Calendar currentDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,45 +31,72 @@ public class DiaryActivity extends AppCompatActivity {
         //-------- Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("Lens to Fork");
 
-        //------- Widgets
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                return null;
-            }
+        //------ Set Up DiaryFragment
+        currentDate = Calendar.getInstance();
+        final FragmentController controller = new FragmentController(getSupportFragmentManager());
+        controller.openFragment(setUpFragment(), DiaryFragment.TAG);
 
+        //------ Widgets
+        leftArrow = (ImageView) findViewById(R.id.img_left_arrow);
+        leftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
-            public int getCount() {
-                return 0;
+            public void onClick(View v) {
+                currentDate.set(Calendar.DAY_OF_MONTH, -1);
+                controller.openFragment(setUpFragment(), DiaryFragment.TAG);
             }
         });
 
-        // Make data that can be added to the database
-        EntryHandler handler0 = new EntryHandler("06-25-2018");
-        Entry entry0 = new Entry("filepath0", "title0", "title0");
-        Entry entry1 = new Entry("filepath1", "title1", "note1");
-        Entry entry2 = new Entry("filepath2", "title2", "note2");
-        Entry entry3 = new Entry("filepath3", "title3", "note3");
+        rightArrow = (ImageView) findViewById(R.id.img_right_arrow);
+        rightArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentDate.set(Calendar.DAY_OF_MONTH, 1);
+                controller.openFragment(setUpFragment(), DiaryFragment.TAG);
+            }
+        });
 
-        handler0.addEntry(entry0);
-        handler0.addEntry(entry1);
-        handler0.addEntry(entry2);
-        handler0.addEntry(entry3);
+        // set text on date widget
+        dateText = (TextView) findViewById(R.id.txt_title);
+        Calendar today = Calendar.getInstance();
+        if(getStringDate(today).equals(getStringDate(currentDate))){
+            dateText.setText("Today");
+        }
+        else{
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+            dateText.setText(sdf.format(currentDate));
+        }
+    }
 
-        // Add to database
-        DatabaseHandler dbHandler = new DatabaseHandler(this);
+    private DiaryFragment setUpFragment(){
+        // get Today's date
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        String dateStr = sdf.format(currentDate.getTime());
 
-        List<EntryHandler> list = dbHandler.getAllEntryHandlers();
-        List<Entry> list1 = dbHandler.getAllEntries();
+        // check if EntryHandler exists in database
+        DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
+        EntryHandler entryHandler = null;
+        if(databaseHandler.doesEntryHandlerExist(dateStr)){
+            // get EntryHandler from database
+            entryHandler = databaseHandler.getEntryHandler(dateStr);
+        }
+        else{
+            // create EntryHandler for today
+            entryHandler = new EntryHandler(dateStr);
+        }
 
-        dbHandler.addEntries(handler0);
-        dbHandler.deleteEntryHandler(handler0);
+        return DiaryFragment.newInstance(entryHandler);
+    }
 
-        list = dbHandler.getAllEntryHandlers();
-        list1 = dbHandler.getAllEntries();
-        int x=0;
+    /**
+     * Formats the date into a string in the following format: MM-DD-YYYY
+     *
+     * @return returns the string representation of the date
+     */
+    public String getStringDate(Calendar date){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        return sdf.format(date.getTime());
     }
 }
 

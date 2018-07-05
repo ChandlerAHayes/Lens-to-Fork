@@ -154,4 +154,8 @@ public class EntryHandler implements Serializable {
     public Entry[] getEntries(){
         return entries;
     }
+
+    public Entry getEntry(int position){
+        return entries[position];
+    }
 }
