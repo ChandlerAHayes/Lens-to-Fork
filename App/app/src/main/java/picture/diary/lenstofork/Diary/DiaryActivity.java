@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import Entry.EntryHandler;
 import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
 import picture.diary.lenstofork.Diary.Utils.FragmentController;
 import picture.diary.lenstofork.R;

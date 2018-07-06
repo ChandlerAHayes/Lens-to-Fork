@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="15dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="15dp">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/img_entry"
+        android:text="Choose an image" />
+
+    <ImageView
+        android:id="@+id/img_entry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="30dp"
+        app:srcCompat="@drawable/camera_teal" />
+
+    <EditText
+        android:id="@+id/txt_entry_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/img_entry"
+        android:layout_marginTop="15dp"
+        android:hint="Title"
+        android:singleLine="true"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/txt_entry_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_entry_title"
+        android:layout_marginTop="15dp"
+        android:hint="Caption"
+        android:singleLine="true"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/bttn_submit"
+        style="@style/ColoredButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Submit" />
+</RelativeLayout>

@@ -5,13 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import picture.diary.lenstofork.Diary.Entry;
-import picture.diary.lenstofork.Diary.EntryHandler;
+import Entry.Entry;
+import Entry.EntryHandler;
 
 /**
  * https://www.javatpoint.com/android-sqlite-tutorial
@@ -110,9 +112,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private Long addEntry(Entry entry, SQLiteDatabase db){
         // make a new row in the Entries table
         ContentValues values = new ContentValues();
-        values.put(KEY_IMG, entry.getImageFilePath());
+        values.put(KEY_IMG, entry.getImageFilePath().getPath());
         values.put(KEY_TITLE, entry.getTitle());
-        values.put(KEY_NOTE, entry.getNote());
+        values.put(KEY_NOTE, entry.getCaption());
 
         //insert row and save the id in the entryIDs variables
         long id = db.insert(TABLE_ENTRY, null, values);
@@ -174,7 +176,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null, null, null, null);
 
         if(cursor.moveToFirst()){
-            String img = cursor.getString(1);
+            String imgFilePath = cursor.getString(1);
+            Uri img = Uri.fromFile(new File(imgFilePath));
             String title = cursor.getString(2);
             String note = cursor.getString(3);
 
@@ -247,7 +250,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                  */
 
                 Long id = cursor.getLong(0);
-                String img = cursor.getString(1);
+                String imgFilePath = cursor.getString(1);
+                Uri img = Uri.fromFile(new File(imgFilePath));
                 String title = cursor.getString(2);
                 String note = cursor.getString(3);
                 Entry entry = new Entry(id, img, title, note);
@@ -370,9 +374,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private int updateEntry(Entry entry, SQLiteDatabase db){
         // update the entry's attributes in the database
         ContentValues values = new ContentValues();
-        values.put(KEY_IMG, entry.getImageFilePath());
+        values.put(KEY_IMG, entry.getImageFilePath().getPath());
         values.put(KEY_TITLE, entry.getTitle());
-        values.put(KEY_NOTE, entry.getNote());
+        values.put(KEY_NOTE, entry.getCaption());
 
         // update row
         return db.update(TABLE_ENTRY, values, KEY_ID + "=?",

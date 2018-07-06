@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Diary.EntryActivity"></activity>
     </application>
 
+    <!-- Camera Restriction on Google Play -->
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <!-- Saves photos to external image -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 </manifest>

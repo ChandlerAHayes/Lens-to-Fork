@@ -1,35 +1,44 @@
-package picture.diary.lenstofork.Diary;
+package Entry;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 public class Entry {
     private  Long id;
-    private String filepath;
+    private Uri filepath;
     private Drawable img;
     private String title;
-    private  String note;
+    private  String caption;
 
     //------- Constructors
-    public Entry(String image, String title, String note){
-        this.filepath = image;
+    public Entry(Drawable image, String title, String caption){
+        this.img = image;
         this.title = title;
-        this.note = note;
+        this.caption = caption;
         id = null;
     }
 
-    public Entry(Long id, String image, String title, String note){
+    public Entry(Uri image, String title, String caption){
+        this.filepath = image;
+        this.title = title;
+        this.caption = caption;
+        id = null;
+    }
+
+    public Entry(Long id, Uri image, String title, String caption){
         this.id = id;
         this.filepath = image;
         this.title = title;
-        this.note = note;
-    }
-
-    public String getImageFilePath() {
-        return filepath;
+        this.caption = caption;
     }
 
     //-------- Setter & Getters
-    public void setImageFilePath(String image) {
+
+    public Uri getImageFilePath() {
+        return filepath;
+    }
+
+    public void setImageFilePath(Uri image) {
         this.filepath = image;
     }
 
@@ -45,12 +54,12 @@ public class Entry {
         this.title = title;
     }
 
-    public String getNote() {
-        return note;
+    public String getCaption() {
+        return caption;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public void setId(Long id) {
@@ -76,7 +85,7 @@ public class Entry {
         //------ Compare attributes
         Entry entry = (Entry) obj;
         return ( filepath.equals(((Entry) obj).getImageFilePath()) && title.equals(((Entry) obj)
-                .getTitle()) && note.equals(((Entry) obj).getNote()) )
+                .getTitle()) && caption.equals(((Entry) obj).getCaption()) )
                 || id.equals(((Entry) obj).getId());
     }
 }

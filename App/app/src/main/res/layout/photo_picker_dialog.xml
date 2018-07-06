@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="15dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add a Photo"
+        android:textSize="24sp" />
+
+    <ImageView
+        android:id="@+id/img_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_title"
+        android:layout_marginTop="15dp"
+        app:srcCompat="@drawable/camera_icon"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="32dp" />
+
+    <TextView
+        android:id="@+id/txt_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_title"
+        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@+id/img_camera"
+        android:text="Camera"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="24dp"
+        tools:layout_editor_absoluteY="32dp" />
+
+    <TextView
+        android:id="@+id/txt_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_below="@+id/txt_camera"
+        android:layout_marginTop="15dp"
+        android:layout_toRightOf="@+id/img_gallery"
+        android:text="Gallery"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="243dp"
+        tools:layout_editor_absoluteY="193dp" />
+
+    <ImageView
+        android:id="@+id/img_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_camera"
+        android:layout_marginTop="15dp"
+        app:srcCompat="@drawable/gallery_icon" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/txt_title"
+        android:background="?android:attr/listDivider" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/img_camera"
+        android:background="?android:attr/listDivider" />
+
+    <View
+        android:id="@+id/divider4"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+</RelativeLayout>

@@ -1,4 +1,6 @@
-package picture.diary.lenstofork.Diary;
+package Entry;
+
+import android.net.Uri;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -50,16 +52,16 @@ public class EntryHandler implements Serializable {
      *
      * @param image the image for the entry
      * @param title the entry's title. Can be an empty string
-     * @param note the entry's note. Can be an empty string
+     * @param caption the entry's caption. Can be an empty string
      * @return  true if there is room for another entry, false otherwise
      */
-    public boolean addEntry(String image, String title, String note){
+    public boolean addEntry(Uri image, String title, String caption){
         // cannot have more than 6 entries
         if(numEntries == ENTRY_LIMIT){
             return false;
         }
         else{
-            Entry newEntry = new Entry(image, title, note);
+            Entry newEntry = new Entry(image, title, caption);
             entries[numEntries] = newEntry;
             numEntries++;
             return true;
