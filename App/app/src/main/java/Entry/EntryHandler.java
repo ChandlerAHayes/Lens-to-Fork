@@ -1,7 +1,5 @@
 package Entry;
 
-import android.net.Uri;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,17 +10,6 @@ public class EntryHandler implements Serializable {
     private Entry[] entries = new Entry[ENTRY_LIMIT];
 
     public static final int ENTRY_LIMIT = 6;
-
-
-    public EntryHandler(Calendar date){
-        this.date = date;
-        numEntries = 0;
-
-        for(int i =0; i<ENTRY_LIMIT; i++){
-            entries[i] = null;
-        }
-
-    }
 
     /**
      * Converts the string version of the date into a Calendar object. Creates the object.
@@ -50,18 +37,18 @@ public class EntryHandler implements Serializable {
      * Adds a new entry to the EntryHandler. If the limit of 6 entries has been reached, then
      * the method will return false.
      *
-     * @param image the image for the entry
+     * @param imageFilePath the image for the entry
      * @param title the entry's title. Can be an empty string
      * @param caption the entry's caption. Can be an empty string
      * @return  true if there is room for another entry, false otherwise
      */
-    public boolean addEntry(Uri image, String title, String caption){
+    public boolean addEntry(String imageFilePath, String title, String caption){
         // cannot have more than 6 entries
         if(numEntries == ENTRY_LIMIT){
             return false;
         }
         else{
-            Entry newEntry = new Entry(image, title, caption);
+            Entry newEntry = new Entry(imageFilePath, title, caption);
             entries[numEntries] = newEntry;
             numEntries++;
             return true;
@@ -86,6 +73,12 @@ public class EntryHandler implements Serializable {
         }
     }
 
+    /**
+     * Removes the entry at the specified position
+     *
+     * @param position the position of the entry to remove
+     * @return true if it can be removed, false otherwise
+     */
     public boolean removeEntry(int position){
         // cannot remove an entry with there are none
         if(numEntries == 0){

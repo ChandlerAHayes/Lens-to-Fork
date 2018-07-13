@@ -9,7 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+
+import Entry.Entry;
 import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
 import picture.diary.lenstofork.R;
 
 public class DiaryFragment extends Fragment {
@@ -20,11 +24,13 @@ public class DiaryFragment extends Fragment {
     private View[] containers = new View[6];
 
     // other variables
-    private static EntryHandler entries;
+    private static EntryHandler entryHandler;
     private int lastValidEntry = -1;
+    private int tabHeight = 0;
 
     // flags
-    private static final String ARG_ENTRY = "ARG ENTRY";
+    private static final String ARG_ENTRY_HANDLER = "ARG_ENTRY_HANDLER";
+    private static final String ARG_TAB_HEIGHT = "ARG_TAB_HEIGHT";
     public static final String TAG = "DIARY_FRAGMENT";
 
     @Override
@@ -32,7 +38,21 @@ public class DiaryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_diary, container, false);
 
-        entries = (EntryHandler) getArguments().getSerializable(ARG_ENTRY);
+        // get tab height
+        tabHeight = getArguments().getInt(ARG_TAB_HEIGHT);
+
+        //------ Get EntryHandler for date given
+        String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
+        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+        if(databaseHandler.doesEntryHandlerExist(dateString)){
+            // get EntryHandler from database
+            entryHandler = databaseHandler.getEntryHandler(dateString);
+        }
+        else{
+            // create EntryHandler for given date
+            entryHandler = new EntryHandler(dateString);
+        }
+
         setUpView(view);
 
         return view;
@@ -55,31 +75,41 @@ public class DiaryFragment extends Fragment {
         containers[4] = parent.findViewById(R.id.entry_4);
         containers[5] = parent.findViewById(R.id.entry_5);
 
-        boolean entriesAreLogged = true;    // indicates if the current iteration has data for entries
+        boolean entriesAreLogged = true;    // indicates if the current iteration has data for entryHandler
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
             // initialize widgets
-            titles[i] = containers[i].findViewById(R.id.txt_title);
-            captions[i] = containers[i].findViewById(R.id.txt_note);
-            images[i] = containers[i].findViewById(R.id.img);
+            titles[i] = (TextView) containers[i].findViewById(R.id.txt_title);
+            captions[i] = (TextView) containers[i].findViewById(R.id.txt_note);
+            images[i] = (ImageView) containers[i].findViewById(R.id.img);
 
             // set up OnClickListeners for each view & disable clicking
             containers[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // go to add new entry page
-                    Intent intent = EntryActivity.newInstance(NewEntryFragment.TAG, entries,
-                            getActivity());
+                    Intent intent = EntryActivity.newInstance(NewEntryFragment.TAG,
+                            entryHandler.getStringDate(), getActivity());
                     startActivity(intent);
                 }
             });
             containers[i].setClickable(false);
 
+            //------ Set Values for Entries
+            Entry currentEntry = entryHandler.getEntry(i);
+            if(currentEntry != null){
+                titles[i].setText(currentEntry.getTitle());
+                captions[i].setText(currentEntry.getCaption());
 
-            // set values for entries
-            if(entries.getEntry(i) != null){
-                titles[i].setText(entries.getEntry(i).getTitle());
-                captions[i].setText(entries.getEntry(i).getCaption());
-                images[i].setImageDrawable(entries.getEntry(i).getImage());
+                // check if the image stored in currentEntry exists
+                String filepath = currentEntry.getImageFilePath();
+                if(!new File(filepath).exists()){
+                    //TODO: make a default image
+                    // image does not exist, so use default
+                    images[i].setImageResource(R.drawable.add_entry_pink);
+                }
+                else{
+                    images[i].setImageBitmap(currentEntry.getImage());
+                }
             }
             else{
                 if(entriesAreLogged){
@@ -90,7 +120,7 @@ public class DiaryFragment extends Fragment {
 
 
                     // set default picture for adding a new pic
-                    images[i].setImageResource(R.drawable.add_entry_123);
+                    images[i].setImageResource(R.drawable.add_entry_teal);
                     titles[i].setText("Add New Entry");
                 }
                 else{
@@ -115,11 +145,12 @@ public class DiaryFragment extends Fragment {
     }
 
     //------- Fragment Methods
-    public static DiaryFragment newInstance(EntryHandler entries){
+    public static DiaryFragment newInstance(String entryHandlerDate, int tabHeight){
         DiaryFragment fragment = new DiaryFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(ARG_ENTRY, entries);
+        args.putString(ARG_ENTRY_HANDLER, entryHandlerDate);
+        args.putInt(ARG_TAB_HEIGHT, tabHeight);
         fragment.setArguments(args);
 
         return fragment;

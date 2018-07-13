@@ -6,13 +6,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import Entry.EntryHandler;
 import picture.diary.lenstofork.Diary.Utils.FragmentController;
 import picture.diary.lenstofork.R;
 
 public class EntryActivity extends AppCompatActivity {
-    // variables
-    private EntryHandler handler;
+    private String dateString;
 
     // contsants
     private static final String EXTRA_FRAGMENT_TAG = "FRAGMENT TAG";
@@ -30,13 +28,14 @@ public class EntryActivity extends AppCompatActivity {
 
         //------ Set Up Fragment to Dispalys
         Intent extras = getIntent();
-        handler = (EntryHandler) extras.getSerializableExtra(EXTRA_ENTRY_HANDLER);
+
+        dateString = extras.getStringExtra(EXTRA_ENTRY_HANDLER);
         String fragmentTag = extras.getStringExtra(EXTRA_FRAGMENT_TAG);
 
         final FragmentController controller = new FragmentController(getSupportFragmentManager());
         // determine which fragment to dispaly
         if(fragmentTag.equals(NewEntryFragment.TAG)){
-            controller.openFragment(NewEntryFragment.newInstance(handler), NewEntryFragment.TAG);
+            controller.openFragment(NewEntryFragment.newInstance(dateString), NewEntryFragment.TAG);
         }
     }
 
@@ -45,15 +44,15 @@ public class EntryActivity extends AppCompatActivity {
      * activity
      *
      * @param fragmentTag needed to know which fragment to display
-     * @param handler needed to pass on the EntryHandler
+     * @param dateString needed to pass on the EntryHandler's id
      * @param activity the activity that is starting this activity
      * @return
      */
-    public static Intent newInstance(String fragmentTag, EntryHandler handler, Activity activity){
+    public static Intent newInstance(String fragmentTag, String dateString, Activity activity){
         // put extras in an intent
         Intent intent = new Intent(activity, EntryActivity.class);
         intent.putExtra(EXTRA_FRAGMENT_TAG, fragmentTag);
-        intent.putExtra(EXTRA_ENTRY_HANDLER, handler);
+        intent.putExtra(EXTRA_ENTRY_HANDLER, dateString);
 
         return intent;
     }

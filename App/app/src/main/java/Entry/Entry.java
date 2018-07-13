@@ -1,51 +1,63 @@
 package Entry;
 
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 public class Entry {
     private  Long id;
-    private Uri filepath;
-    private Drawable img;
+    private String filepath;
+    private Bitmap image;
     private String title;
     private  String caption;
 
     //------- Constructors
-    public Entry(Drawable image, String title, String caption){
-        this.img = image;
+    public Entry(String filePath, String title, String caption){
+        id = null;
+
+        this.filepath = filePath;
+        image = BitmapFactory.decodeFile(filepath);
+
         this.title = title;
         this.caption = caption;
-        id = null;
     }
 
-    public Entry(Uri image, String title, String caption){
-        this.filepath = image;
-        this.title = title;
-        this.caption = caption;
-        id = null;
-    }
-
-    public Entry(Long id, Uri image, String title, String caption){
+    public Entry(Long id, String filePath, String title, String caption){
         this.id = id;
-        this.filepath = image;
+
+        this.filepath = filePath;
+        image = BitmapFactory.decodeFile(filepath);
+
+        this.title = title;
+        this.caption = caption;
+    }
+
+    public Entry(String title, String caption){
+        id = null;
+
+        filepath = "";
+        image = null;
+
         this.title = title;
         this.caption = caption;
     }
 
     //-------- Setter & Getters
-
-    public Uri getImageFilePath() {
+    // Image File Path
+    public String getImageFilePath() {
         return filepath;
     }
 
-    public void setImageFilePath(Uri image) {
-        this.filepath = image;
+    public void setImageFilePath(String filePath) {
+        this.filepath = filePath;
+        image = BitmapFactory.decodeFile(filepath);
     }
 
-    public Drawable getImage(){
-        return img;
+    // Bitmap Image
+    public Bitmap getImage(){
+        return image;
     }
 
+    // Title
     public String getTitle() {
         return title;
     }
@@ -54,6 +66,7 @@ public class Entry {
         this.title = title;
     }
 
+    // Caption
     public String getCaption() {
         return caption;
     }
@@ -62,6 +75,7 @@ public class Entry {
         this.caption = caption;
     }
 
+    // Image
     public void setId(Long id) {
         this.id = id;
     }

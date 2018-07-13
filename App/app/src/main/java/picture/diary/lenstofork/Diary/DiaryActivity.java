@@ -17,6 +17,7 @@ import picture.diary.lenstofork.R;
 
 public class DiaryActivity extends AppCompatActivity {
     // widgets
+    private View tablayout;
     private ImageView leftArrow;
     private ImageView rightArrow;
     private TextView dateText;
@@ -28,6 +29,8 @@ public class DiaryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
+
+        tablayout = findViewById(R.id.tab);
 
         //-------- Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -87,7 +90,7 @@ public class DiaryActivity extends AppCompatActivity {
             entryHandler = new EntryHandler(dateStr);
         }
 
-        return DiaryFragment.newInstance(entryHandler);
+        return DiaryFragment.newInstance(dateStr, tablayout.getHeight());
     }
 
     /**

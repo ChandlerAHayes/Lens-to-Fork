@@ -5,9 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -112,7 +110,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private Long addEntry(Entry entry, SQLiteDatabase db){
         // make a new row in the Entries table
         ContentValues values = new ContentValues();
-        values.put(KEY_IMG, entry.getImageFilePath().getPath());
+        values.put(KEY_IMG, entry.getImageFilePath());
         values.put(KEY_TITLE, entry.getTitle());
         values.put(KEY_NOTE, entry.getCaption());
 
@@ -176,8 +174,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null, null, null, null);
 
         if(cursor.moveToFirst()){
-            String imgFilePath = cursor.getString(1);
-            Uri img = Uri.fromFile(new File(imgFilePath));
+            String img = cursor.getString(1);
             String title = cursor.getString(2);
             String note = cursor.getString(3);
 
@@ -250,8 +247,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                  */
 
                 Long id = cursor.getLong(0);
-                String imgFilePath = cursor.getString(1);
-                Uri img = Uri.fromFile(new File(imgFilePath));
+                String img = cursor.getString(1);
                 String title = cursor.getString(2);
                 String note = cursor.getString(3);
                 Entry entry = new Entry(id, img, title, note);
@@ -374,7 +370,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private int updateEntry(Entry entry, SQLiteDatabase db){
         // update the entry's attributes in the database
         ContentValues values = new ContentValues();
-        values.put(KEY_IMG, entry.getImageFilePath().getPath());
+        values.put(KEY_IMG, entry.getImageFilePath());
         values.put(KEY_TITLE, entry.getTitle());
         values.put(KEY_NOTE, entry.getCaption());
 
