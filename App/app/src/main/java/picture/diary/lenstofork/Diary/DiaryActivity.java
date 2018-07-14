@@ -1,5 +1,7 @@
 package picture.diary.lenstofork.Diary;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,27 +12,31 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import Entry.EntryHandler;
-import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
 import picture.diary.lenstofork.Diary.Utils.FragmentController;
 import picture.diary.lenstofork.R;
 
 public class DiaryActivity extends AppCompatActivity {
     // widgets
-    private View tablayout;
+    private View tabLayout;
     private ImageView leftArrow;
     private ImageView rightArrow;
     private TextView dateText;
 
-    // other variables
+    // variables
     private Calendar currentDate;
+    private SimpleDateFormat simpleDateFormat;
+    private String dateString = "";
+
+    // constants
+    public static final String EXTRA_CURRENT_DATE = "EXTRA_CURRENT_DATE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_diary);
 
-        tablayout = findViewById(R.id.tab);
+        tabLayout = findViewById(R.id.tab);
+        simpleDateFormat = new SimpleDateFormat("_MM_dd_yyyy");
 
         //-------- Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -38,17 +44,21 @@ public class DiaryActivity extends AppCompatActivity {
         setTitle("Lens to Fork");
 
         //------ Set Up DiaryFragment
-        currentDate = Calendar.getInstance();
+        handleExtras();
+
         final FragmentController controller = new FragmentController(getSupportFragmentManager());
-        controller.openFragment(setUpFragment(), DiaryFragment.TAG);
+        controller.openFragment(setUpFragment(), DiaryFragment.TAG + dateString);
 
         //------ Widgets
         leftArrow = (ImageView) findViewById(R.id.img_left_arrow);
         leftArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentDate.set(Calendar.DAY_OF_MONTH, -1);
-                controller.openFragment(setUpFragment(), DiaryFragment.TAG);
+                currentDate.add(Calendar.DAY_OF_MONTH, -1);
+                dateString = simpleDateFormat.format(currentDate.getTime());
+
+                updateTabLayoutText();
+                controller.openFragment(setUpFragment(), DiaryFragment.TAG + dateString);
             }
         });
 
@@ -56,8 +66,11 @@ public class DiaryActivity extends AppCompatActivity {
         rightArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentDate.set(Calendar.DAY_OF_MONTH, 1);
-                controller.openFragment(setUpFragment(), DiaryFragment.TAG);
+                currentDate.add(Calendar.DAY_OF_MONTH, 1);
+                dateString = simpleDateFormat.format(currentDate.getTime());
+
+                updateTabLayoutText();
+                controller.openFragment(setUpFragment(), DiaryFragment.TAG + dateString);
             }
         });
 
@@ -69,28 +82,8 @@ public class DiaryActivity extends AppCompatActivity {
         }
         else{
             SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-            dateText.setText(sdf.format(currentDate));
+            dateText.setText(sdf.format(currentDate.getTime()));
         }
-    }
-
-    private DiaryFragment setUpFragment(){
-        // get Today's date
-        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
-        String dateStr = sdf.format(currentDate.getTime());
-
-        // check if EntryHandler exists in database
-        DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
-        EntryHandler entryHandler = null;
-        if(databaseHandler.doesEntryHandlerExist(dateStr)){
-            // get EntryHandler from database
-            entryHandler = databaseHandler.getEntryHandler(dateStr);
-        }
-        else{
-            // create EntryHandler for today
-            entryHandler = new EntryHandler(dateStr);
-        }
-
-        return DiaryFragment.newInstance(dateStr, tablayout.getHeight());
     }
 
     /**
@@ -101,6 +94,65 @@ public class DiaryActivity extends AppCompatActivity {
     public String getStringDate(Calendar date){
         SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
         return sdf.format(date.getTime());
+    }
+
+    /**
+     * Updates the text on the TabLayout to match the current date
+     */
+    private void updateTabLayoutText(){
+        Calendar today = Calendar.getInstance();
+        int currentYear = currentDate.get(Calendar.YEAR);
+        int todayYear = today.get(Calendar.YEAR);
+
+        if (today.equals(currentDate)){
+            dateText.setText("Today");
+        }
+        // same year
+        else if(currentYear - todayYear == 0 ){
+            SimpleDateFormat sdf = new SimpleDateFormat("EE, MMM d");
+            dateText.setText(sdf.format(currentDate.getTime()));
+        }
+        else{
+            SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy");
+            dateText.setText(sdf.format(currentDate.getTime()));
+        }
+    }
+
+    /**
+     * Sets up the diary fragment to show the entries that correspond to the current date
+     *
+     * @return an initialized DiaryFragment object with the current date
+     */
+    private DiaryFragment setUpFragment(){
+        // get Today's date
+        SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+        String dateStr = sdf.format(currentDate.getTime());
+
+        return DiaryFragment.newInstance(dateStr);
+    }
+
+    public static Intent newInstance(Activity activity, String dateString){
+        Intent intent = new Intent(activity, DiaryActivity.class);
+        intent.putExtra(EXTRA_CURRENT_DATE, dateString);
+        return intent;
+    }
+
+    private void handleExtras(){
+        if(getIntent().getExtras() == null){
+            currentDate = Calendar.getInstance();
+            dateString = simpleDateFormat.format(currentDate.getTime());
+        }
+        else{
+            dateString = getIntent().getStringExtra(EXTRA_CURRENT_DATE);
+            String[] dateSplit = dateString.split("-");
+            int year = Integer.valueOf(dateSplit[2]);
+            int month = Integer.valueOf(dateSplit[0])-1; // january is 0, must subtract by 1
+            int day = Integer.valueOf(dateSplit[1]);
+
+            // 	set(int year, int month, int date)
+            currentDate = Calendar.getInstance();
+            currentDate.set(year, month, day);
+        }
     }
 }
 

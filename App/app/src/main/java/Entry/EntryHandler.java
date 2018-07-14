@@ -66,6 +66,9 @@ public class EntryHandler implements Serializable {
         if(numEntries == ENTRY_LIMIT){
             return false;
         }
+        else if (entry == null){
+            return false;
+        }
         else{
             entries[numEntries] = entry;
             numEntries++;

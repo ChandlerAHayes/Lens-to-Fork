@@ -1,44 +1,32 @@
 package picture.diary.lenstofork.Diary.Utils;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class SquareImageView extends android.support.v7.widget.AppCompatImageView {
-    public void resizeToParent(View parent, int tabHeight){
-        /**
-         * max height cannot be greater than 1/3 of the parent height or 1/2 parent width with
-         *  considering the tab and giving some room for titles and padding
-         */
+public class SquareImageView extends AppCompatImageView {
 
-        int maxWidth = parent.getWidth() - parent.getPaddingLeft() - parent.getPaddingRight();
-        maxWidth *= 1/3;
-        int maxHeight = parent.getHeight() - tabHeight;
-        maxHeight *= 1/2;
+    /**
+     * Resizes the ImageView to a square that is at most nearly a 1/2 of the parent's View in width
+     * and at most nearly a 1/3 of the parent's View in height.
+     *
+     * @param parent
+     */
+    public void resizeImage(View parent){
+        int width = (int) Math.floor(parent.getMeasuredWidth() * 0.48);
+        int height = (int) Math.floor(parent.getMeasuredHeight() * 0.31);
 
-        if(maxWidth < maxHeight){
-            setMeasuredDimension(maxWidth, maxWidth);
+        if(width < height){
+            getLayoutParams().height = width;
+            getLayoutParams().width = width;
         }
         else{
-            setMeasuredDimension(maxHeight, maxHeight);
+            getLayoutParams().height = height;
+            getLayoutParams().width = height;
         }
 
-        int w = getWidth();
-        int h = getHeight();
-        h += 0;
-
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        if(widthMeasureSpec < heightMeasureSpec){
-            setMeasuredDimension(widthMeasureSpec, widthMeasureSpec);
-        }
-        else{
-            setMeasuredDimension(heightMeasureSpec, heightMeasureSpec);
-        }
+        requestLayout();
     }
 
     //-------- Constructors

@@ -60,7 +60,7 @@ public class NewEntryFragment extends Fragment {
     public static final int REQUEST_CODE_READ_PERMISSION = 3;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
 
@@ -93,6 +93,8 @@ public class NewEntryFragment extends Fragment {
 
                 // add new entry to database
                 handler.addEntry(entry);
+                handler.addEntry(entry);
+                Entry[] entries = handler.getEntries();
                 DatabaseHandler database = new DatabaseHandler(getContext());
                 if(handler.getNumberOfEntries() == 1){
                     database.addEntries(handler);
@@ -102,7 +104,8 @@ public class NewEntryFragment extends Fragment {
                 }
 
                 // go back to main page
-                startActivity(new Intent(getActivity(), DiaryActivity.class));
+                Intent intent = DiaryActivity.newInstance(getActivity(), handler.getStringDate());
+                startActivity(intent);
             }
         });
 

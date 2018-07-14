@@ -130,7 +130,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public EntryHandler getEntryHandler(String dateStr){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY0, KEY_ENTRY1,
+        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_ENTRY0, KEY_ENTRY1,
                         KEY_ENTRY2, KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5}, KEY_DATE + "=?",
                 new String[]{dateStr}, null, null, null, null);
 
@@ -139,14 +139,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             // get the date and create the EntryHandler object
             EntryHandler handler = new EntryHandler(dateStr);
 
-            // get all of the entries associated with the handler and add it to the handler obj
-            int pos = 1; // pos 1 is the position of the first entry (entry0)
-            while(cursor.getString(pos) != null && pos < 7){
-                long entryID = cursor.getLong(pos);
-                Entry currentEntry = getEntry(entryID);
-                handler.addEntry(currentEntry);
-                pos++;
-            }
+            int entry0 = cursor.getColumnIndex(KEY_ENTRY0);
+            int entry1 = cursor.getColumnIndex(KEY_ENTRY1);
+            int entry2 = cursor.getColumnIndex(KEY_ENTRY2);
+            int entry3 = cursor.getColumnIndex(KEY_ENTRY3);
+            int entry4 = cursor.getColumnIndex(KEY_ENTRY4);
+            int entry5 = cursor.getColumnIndex(KEY_ENTRY5);
+
+            handler.addEntry(getEntry(cursor.getLong(entry0)));
+            handler.addEntry(getEntry(cursor.getLong(entry1)));
+            handler.addEntry(getEntry(cursor.getLong(entry2)));
+            handler.addEntry(getEntry(cursor.getLong(entry3)));
+            handler.addEntry(getEntry(cursor.getLong(entry4)));
+            handler.addEntry(getEntry(cursor.getLong(entry5)));
 
             cursor.close();
             return handler;

@@ -1,8 +1,12 @@
 package picture.diary.lenstofork.Diary;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -15,27 +19,39 @@ public class EntryActivity extends AppCompatActivity {
     // contsants
     private static final String EXTRA_FRAGMENT_TAG = "FRAGMENT TAG";
     private static final String EXTRA_ENTRY_HANDLER = "ENTRY_HANDLER";
+    private static int REQUEST_CODE_READ_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
 
+        askForPermission();
+
         //-------- Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("Lens to Fork");
 
-        //------ Set Up Fragment to Dispalys
+        //------ Set Up Fragment to Displays
         Intent extras = getIntent();
 
         dateString = extras.getStringExtra(EXTRA_ENTRY_HANDLER);
         String fragmentTag = extras.getStringExtra(EXTRA_FRAGMENT_TAG);
 
         final FragmentController controller = new FragmentController(getSupportFragmentManager());
-        // determine which fragment to dispaly
+        // determine which fragment to display
         if(fragmentTag.equals(NewEntryFragment.TAG)){
             controller.openFragment(NewEntryFragment.newInstance(dateString), NewEntryFragment.TAG);
+        }
+    }
+
+    private void askForPermission(){
+        if(ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission
+                    .READ_EXTERNAL_STORAGE}, REQUEST_CODE_READ_PERMISSION);
         }
     }
 

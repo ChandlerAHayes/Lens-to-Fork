@@ -8,11 +8,9 @@ import picture.diary.lenstofork.R;
 
 public class FragmentController {
     FragmentManager manager;
-    FragmentTransaction transaction;
 
     public FragmentController(FragmentManager manager){
         this.manager = manager;
-        this.transaction = manager.beginTransaction();
     }
 
     /**
@@ -23,6 +21,8 @@ public class FragmentController {
      * @param tag the tag corresponding to the fragment
      */
     public void openFragment(Fragment fragment, String tag){
+        FragmentTransaction transaction = manager.beginTransaction();
+
         // if there's nothing in the back stack then add fragment
         if(manager.getBackStackEntryCount() == 0 ){
             transaction.add(R.id.main_content, fragment, tag);
@@ -45,4 +45,11 @@ public class FragmentController {
 
         }
     }
+
+    public void popFragment(String tag){
+        int index = manager.getBackStackEntryCount() - 1;
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.remove(manager.findFragmentByTag(tag));
+    }
+
 }

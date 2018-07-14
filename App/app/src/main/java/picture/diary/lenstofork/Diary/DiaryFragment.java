@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -14,19 +13,19 @@ import java.io.File;
 import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
+import picture.diary.lenstofork.Diary.Utils.SquareImageView;
 import picture.diary.lenstofork.R;
 
 public class DiaryFragment extends Fragment {
     // widgets
     private TextView[] titles = new TextView[6];
     private TextView[] captions = new TextView[6];
-    private ImageView[] images = new ImageView[6];
+    private SquareImageView[] images = new SquareImageView[6];
     private View[] containers = new View[6];
 
     // other variables
     private static EntryHandler entryHandler;
     private int lastValidEntry = -1;
-    private int tabHeight = 0;
 
     // flags
     private static final String ARG_ENTRY_HANDLER = "ARG_ENTRY_HANDLER";
@@ -38,15 +37,13 @@ public class DiaryFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_diary, container, false);
 
-        // get tab height
-        tabHeight = getArguments().getInt(ARG_TAB_HEIGHT);
-
         //------ Get EntryHandler for date given
         String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
         DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
         if(databaseHandler.doesEntryHandlerExist(dateString)){
             // get EntryHandler from database
             entryHandler = databaseHandler.getEntryHandler(dateString);
+            entryHandler.getNumberOfEntries();
         }
         else{
             // create EntryHandler for given date
@@ -54,6 +51,16 @@ public class DiaryFragment extends Fragment {
         }
 
         setUpView(view);
+
+        // resize images
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+                    images[i].resizeImage(getView());
+                }
+            }
+        });
 
         return view;
     }
@@ -80,7 +87,7 @@ public class DiaryFragment extends Fragment {
             // initialize widgets
             titles[i] = (TextView) containers[i].findViewById(R.id.txt_title);
             captions[i] = (TextView) containers[i].findViewById(R.id.txt_note);
-            images[i] = (ImageView) containers[i].findViewById(R.id.img);
+            images[i] = (SquareImageView) containers[i].findViewById(R.id.img);
 
             // set up OnClickListeners for each view & disable clicking
             containers[i].setOnClickListener(new View.OnClickListener() {
@@ -97,6 +104,7 @@ public class DiaryFragment extends Fragment {
             //------ Set Values for Entries
             Entry currentEntry = entryHandler.getEntry(i);
             if(currentEntry != null){
+                // set title
                 titles[i].setText(currentEntry.getTitle());
                 captions[i].setText(currentEntry.getCaption());
 
@@ -105,7 +113,7 @@ public class DiaryFragment extends Fragment {
                 if(!new File(filepath).exists()){
                     //TODO: make a default image
                     // image does not exist, so use default
-                    images[i].setImageResource(R.drawable.add_entry_pink);
+                    images[i].setImageResource(R.drawable.ic_launcher_foreground);
                 }
                 else{
                     images[i].setImageBitmap(currentEntry.getImage());
@@ -144,13 +152,14 @@ public class DiaryFragment extends Fragment {
         containers[position].setClickable(true);
     }
 
+
+
     //------- Fragment Methods
-    public static DiaryFragment newInstance(String entryHandlerDate, int tabHeight){
+    public static DiaryFragment newInstance(String entryHandlerDate){
         DiaryFragment fragment = new DiaryFragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_ENTRY_HANDLER, entryHandlerDate);
-        args.putInt(ARG_TAB_HEIGHT, tabHeight);
         fragment.setArguments(args);
 
         return fragment;
