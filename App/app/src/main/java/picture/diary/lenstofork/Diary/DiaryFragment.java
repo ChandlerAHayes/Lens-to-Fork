@@ -29,7 +29,6 @@ public class DiaryFragment extends Fragment {
 
     // flags
     private static final String ARG_ENTRY_HANDLER = "ARG_ENTRY_HANDLER";
-    private static final String ARG_TAB_HEIGHT = "ARG_TAB_HEIGHT";
     public static final String TAG = "DIARY_FRAGMENT";
 
     @Override
@@ -38,17 +37,7 @@ public class DiaryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_diary, container, false);
 
         //------ Get EntryHandler for date given
-        String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
-        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
-        if(databaseHandler.doesEntryHandlerExist(dateString)){
-            // get EntryHandler from database
-            entryHandler = databaseHandler.getEntryHandler(dateString);
-            entryHandler.getNumberOfEntries();
-        }
-        else{
-            // create EntryHandler for given date
-            entryHandler = new EntryHandler(dateString);
-        }
+        handleExtras();
 
         setUpView(view);
 
@@ -138,6 +127,20 @@ public class DiaryFragment extends Fragment {
         }
     }
 
+    private void handleExtras(){
+        String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
+        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+        if(databaseHandler.doesEntryHandlerExist(dateString)){
+            // get EntryHandler from database
+            entryHandler = databaseHandler.getEntryHandler(dateString);
+            entryHandler.getNumberOfEntries();
+        }
+        else{
+            // create EntryHandler for given date
+            entryHandler = new EntryHandler(dateString);
+        }
+    }
+
     /**
      * Handles which box displays "Add New Entry" and sets the old one to be unable to click on,
      * while making the new box clickable
@@ -151,8 +154,6 @@ public class DiaryFragment extends Fragment {
         // set new "Add New Entry" box to clickable
         containers[position].setClickable(true);
     }
-
-
 
     //------- Fragment Methods
     public static DiaryFragment newInstance(String entryHandlerDate){

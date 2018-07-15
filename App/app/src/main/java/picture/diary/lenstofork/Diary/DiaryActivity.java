@@ -1,11 +1,14 @@
 package picture.diary.lenstofork.Diary;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CalendarView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,6 +39,12 @@ public class DiaryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_diary);
 
         tabLayout = findViewById(R.id.tab);
+        tabLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calendarDialog();
+            }
+        });
         simpleDateFormat = new SimpleDateFormat("_MM_dd_yyyy");
 
         //-------- Toolbar
@@ -153,6 +162,33 @@ public class DiaryActivity extends AppCompatActivity {
             currentDate = Calendar.getInstance();
             currentDate.set(year, month, day);
         }
+    }
+
+
+    private void calendarDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_date_picker);
+
+        // Initialize CalendarView
+        CalendarView calendarView = (CalendarView) dialog.findViewById(R.id.calendarView);
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month,
+                                            int dayOfMonth)
+            {
+                // change to selected date
+                currentDate.set(year, month, dayOfMonth);
+                dateString = simpleDateFormat.format(currentDate.getTime());
+
+                updateTabLayoutText();
+                FragmentController controller = new FragmentController(getSupportFragmentManager());
+                controller.openFragment(setUpFragment(), DiaryFragment.TAG + dateString);
+
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 }
 

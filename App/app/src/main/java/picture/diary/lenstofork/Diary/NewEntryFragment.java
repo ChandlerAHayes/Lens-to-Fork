@@ -154,7 +154,9 @@ public class NewEntryFragment extends Fragment {
     }
 
     /**
-     * Puts the image that is located at imageFilePath in the imageview
+     * Puts the image that is located at imageFilePath in the ImageView
+     *
+     * Taken from: https://developer.android.com/training/camera/photobasics
      */
     private void setImageInView() {
         // Get the dimensions of the View
@@ -168,6 +170,12 @@ public class NewEntryFragment extends Fragment {
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
 
+        // check if user didn't take picture
+        if(photoH == -1 || photoW == -1){
+            return;
+        }
+
+
         // Determine how much to scale down the image
         int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
 
@@ -180,6 +188,11 @@ public class NewEntryFragment extends Fragment {
         entryImage.setImageBitmap(bitmap);
     }
 
+    /**
+     * Extracts the appropriate EntryHandler using the given date (dateString)
+     *
+     * @param dateString the date that corresponds to the wanted EntryHandler
+     */
     private void getEntryHandler(String dateString){
         DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
         if(databaseHandler.doesEntryHandlerExist(dateString)){
@@ -225,11 +238,13 @@ public class NewEntryFragment extends Fragment {
             setImageInView();
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
-            Uri imgUri = data.getData();
-            imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
-            imageFilePath = imageHandler.getFilepath();
+            if(data != null){
+                Uri imgUri = data.getData();
+                imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
+                imageFilePath = imageHandler.getFilepath();
 
-            setImageInView();
+                setImageInView();
+            }
         }
     }
 
