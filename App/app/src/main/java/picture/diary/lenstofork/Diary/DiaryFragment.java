@@ -23,13 +23,11 @@ public class DiaryFragment extends Fragment {
     private SquareImageView[] images = new SquareImageView[6];
     private View[] containers = new View[6];
 
-    // other variables
+    // variables
     private static EntryHandler entryHandler;
-    private int lastValidEntry = -1;
 
-    // flags
+    // constants
     private static final String ARG_ENTRY_HANDLER = "ARG_ENTRY_HANDLER";
-    private static final String ARG_TAB_HEIGHT = "ARG_TAB_HEIGHT";
     public static final String TAG = "DIARY_FRAGMENT";
 
     @Override
@@ -65,7 +63,7 @@ public class DiaryFragment extends Fragment {
         return view;
     }
 
-    //--------- Helper Methods
+    //--------- Methods for Setting Up the Views
 
     /**
      * Sets up the widgets within each of the entry's custom_entry layout. It initializes all of the
@@ -74,7 +72,7 @@ public class DiaryFragment extends Fragment {
      * @param parent the parent View of the layout for this fragment
      */
     private void setUpView(View parent){
-        // set up views holding custom_entry layout
+        // set up the containers holding custom_entry layout
         containers[0] = parent.findViewById(R.id.entry_0);
         containers[1] = parent.findViewById(R.id.entry_1);
         containers[2] = parent.findViewById(R.id.entry_2);
@@ -89,49 +87,23 @@ public class DiaryFragment extends Fragment {
             captions[i] = (TextView) containers[i].findViewById(R.id.txt_note);
             images[i] = (SquareImageView) containers[i].findViewById(R.id.img);
 
-            // set up OnClickListeners for each view & disable clicking
-            containers[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // go to add new entry page
-                    Intent intent = EntryActivity.newInstance(NewEntryFragment.TAG,
-                            entryHandler.getStringDate(), getActivity());
-                    startActivity(intent);
-                }
-            });
-            containers[i].setClickable(false);
-
             //------ Set Values for Entries
             Entry currentEntry = entryHandler.getEntry(i);
             if(currentEntry != null){
-                // set title
-                titles[i].setText(currentEntry.getTitle());
-                captions[i].setText(currentEntry.getCaption());
-
-                // check if the image stored in currentEntry exists
-                String filepath = currentEntry.getImageFilePath();
-                if(!new File(filepath).exists()){
-                    //TODO: make a default image
-                    // image does not exist, so use default
-                    images[i].setImageResource(R.drawable.ic_launcher_foreground);
-                }
-                else{
-                    images[i].setImageBitmap(currentEntry.getImage());
-                }
+                // get currentEntry's data and fill it into the current container[i]
+                fillInEntryData(currentEntry, i);
             }
             else{
                 if(entriesAreLogged){
-                    // save the position of the last valid entry
-                    lastValidEntry = i;
+                    /**
+                     * Current index is the first entry that is null. Therefore, make this index
+                     * display the add new entry image. Set this container
+                     */
                     entriesAreLogged = false;
-                    containers[i].setClickable(true);
-
-
-                    // set default picture for adding a new pic
-                    images[i].setImageResource(R.drawable.add_entry_teal);
-                    titles[i].setText("Add New Entry");
+                    setUpAddEntryContainer(i);
                 }
                 else{
+                    // hide additional null entries
                     containers[i].setVisibility(View.GONE);
                 }
             }
@@ -139,20 +111,48 @@ public class DiaryFragment extends Fragment {
     }
 
     /**
-     * Handles which box displays "Add New Entry" and sets the old one to be unable to click on,
-     * while making the new box clickable
+     * With the given entry, it extracts its data and inserts it into the TextViews & ImageView
+     * that correspond to the given index of the container it belongs in.
      *
-     * @param position the position of the new "Add New Entry" box
+     * @param entry the entry to extract its data and insert it into the TextViews & ImageView
+     * @param index the index that the entry belongs in
      */
-    private void setAddNewEntryBox(int position){
-        // set the old "Add New Entry" box to be un-clickable
-        containers[position-1].setClickable(false);
+    private void fillInEntryData(Entry entry, int index){
+        // insert title and caption
+        titles[index].setText(entry.getTitle());
+        captions[index].setText(entry.getCaption());
 
-        // set new "Add New Entry" box to clickable
-        containers[position].setClickable(true);
+        // check if the image stored in currentEntry exists
+        String filepath = entry.getImageFilePath();
+        if(!new File(filepath).exists()){
+            //TODO: make a default image
+            // image does not exist, so use default
+            images[index].setImageResource(R.drawable.ic_launcher_foreground);
+        }
+        else{
+            // insert image
+            images[index].setImageBitmap(entry.getImage());
+        }
+
+        // add on ClickListener to view Entry Details or Edit
     }
 
+    private void setUpAddEntryContainer(int index){
+        // set default picture for adding a new pic
+        images[index].setImageResource(R.drawable.add_entry_teal);
+        titles[index].setText("Add New Entry");
 
+        // go to NewEntryFragment, to create a new Entry
+        containers[index].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // go to add new entry page
+                Intent intent = EntryActivity.newInstance(NewEntryFragment.TAG,
+                        entryHandler.getStringDate(), getActivity());
+                startActivity(intent);
+            }
+        });
+    }
 
     //------- Fragment Methods
     public static DiaryFragment newInstance(String entryHandlerDate){
