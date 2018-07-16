@@ -83,6 +83,14 @@ public class ImageHandler {
                 RESULT_CODE_GALLERY);
     }
 
+    /**
+     * Handles the data that is given when the user selects an image from the gallery and handles
+     * copying of the file into the app's folder
+     *
+     * @param imgUri the uri containing the image the user selected
+     * @param context context of the fragment/activity calling it
+     * @param canCopyImages true if the app can copy the image, false otherwise
+     */
     public void handleGalleryResults(Uri imgUri, Context context, boolean canCopyImages){
         if(canCopyImages){
             File sourceFile = new File(getAbsoluteFilePath(imgUri, context));
