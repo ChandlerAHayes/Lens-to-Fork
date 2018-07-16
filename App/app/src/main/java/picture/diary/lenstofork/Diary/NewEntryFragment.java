@@ -68,7 +68,7 @@ public class NewEntryFragment extends Fragment {
         entryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pictureDialog();
+                imageOptionsDialog();
             }
         });
 
@@ -79,38 +79,18 @@ public class NewEntryFragment extends Fragment {
         submitBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // create new entry
-                String title = titleTxt.getText().toString();
-                String caption = captionTxt.getText().toString();
-                imageFilePath = imageHandler.getFilepath();
-                Entry entry = new Entry(imageFilePath, title, caption);
-                entry.getImageFilePath();
-
-                // add new entry to database
-                entryHandler.addEntry(entry);
-                DatabaseHandler database = new DatabaseHandler(getContext());
-                if(entryHandler.getNumberOfEntries() == 1){
-                    database.addEntries(entryHandler);
-                }
-                else{
-                    database.updateEntryHandler(entryHandler);
-                }
-
-                // go back to main page
-                Intent intent = DiaryActivity.newInstance(getActivity(), entryHandler.getStringDate());
-                startActivity(intent);
+                submitEntry();
             }
         });
 
         return view;
     }
 
-    //--------- Helper Methods
-
+    //-------- Image Related Methods
     /**
      * Gives the user to add a photo by either taking a picture or selecting one from their gallery
      */
-    private void pictureDialog(){
+    private void imageOptionsDialog(){
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dialog_photo_picker);
 
@@ -189,6 +169,8 @@ public class NewEntryFragment extends Fragment {
         entryImage.setImageBitmap(bitmap);
     }
 
+    //--------- Helper Methods
+
     /**
      * Extracts the appropriate EntryHandler using the given date (dateString)
      *
@@ -227,27 +209,58 @@ public class NewEntryFragment extends Fragment {
         }
     }
 
+    /**
+     * Takes in all the data the user entered (title, caption, and image) and uses to make a new
+     * Entry object which is added to the current date's EntryHandler
+     */
+    private void submitEntry(){
+        // create new entry
+        String title = titleTxt.getText().toString();
+        String caption = captionTxt.getText().toString();
+        imageFilePath = imageHandler.getFilepath();
+        Entry entry = new Entry(imageFilePath, title, caption);
+        entry.getImageFilePath();
+
+        // add new entry to database
+        entryHandler.addEntry(entry);
+        DatabaseHandler database = new DatabaseHandler(getContext());
+        if(entryHandler.getNumberOfEntries() == 1){
+            database.addEntries(entryHandler);
+        }
+        else{
+            database.updateEntryHandler(entryHandler);
+        }
+
+        // go back to main page
+        Intent intent = DiaryActivity.newInstance(getActivity(), entryHandler.getStringDate());
+        startActivity(intent);
+    }
+
     //--------- Fragment Methods
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
 
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
+            DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
             imageHandler.addNewImageToGallery();
-            imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(), entryImage);
-
-            setImageInView();
+            imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(),
+                    entryImage);
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
+                DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
+
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
-                imageHandler.resizeAndInsertImage(dimensions.getWidth(),
-                        dimensions.getHeight(), entryImage);
-
-//                setImageInView();
+                if(canCopyImages){
+                    imageHandler.resizeAndInsertImage(dimensions.getWidth(),
+                            dimensions.getHeight(), entryImage);
+                }
+                else{
+                    setImageInView();
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -13,14 +14,13 @@ import java.io.File;
 import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Diary.Utils.SquareImageView;
 import picture.diary.lenstofork.R;
 
 public class DiaryFragment extends Fragment {
     // widgets
     private TextView[] titles = new TextView[6];
     private TextView[] captions = new TextView[6];
-    private SquareImageView[] images = new SquareImageView[6];
+    private ImageView[] images = new ImageView[6];
     private View[] containers = new View[6];
 
     // other variables
@@ -37,17 +37,14 @@ public class DiaryFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_diary, container, false);
 
         //------ Get EntryHandler for date given
-        handleExtras();
+        handleArguments();
 
         setUpView(view);
 
-        // resize images
+        // get dimensions of this fragment's view so image's can be resized in respect to it
         view.post(new Runnable() {
             @Override
             public void run() {
-//                for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-//                    images[i].resizeImage(getView());
-//                }
                 DimensionsDiaryFragment d = DimensionsDiaryFragment.getInstance();
                 d.setWidth(view.getWidth());
                 d.setHeight(view.getHeight());
@@ -79,7 +76,7 @@ public class DiaryFragment extends Fragment {
             // initialize widgets
             titles[i] = (TextView) containers[i].findViewById(R.id.txt_title);
             captions[i] = (TextView) containers[i].findViewById(R.id.txt_note);
-            images[i] = (SquareImageView) containers[i].findViewById(R.id.img);
+            images[i] = (ImageView) containers[i].findViewById(R.id.img);
 
             // set up OnClickListeners for each view & disable clicking
             containers[i].setOnClickListener(new View.OnClickListener() {
@@ -118,7 +115,6 @@ public class DiaryFragment extends Fragment {
                     entriesAreLogged = false;
                     containers[i].setClickable(true);
 
-
                     // set default picture for adding a new pic
                     images[i].setImageResource(R.drawable.add_entry_teal);
                     titles[i].setText("Add New Entry");
@@ -130,7 +126,10 @@ public class DiaryFragment extends Fragment {
         }
     }
 
-    private void handleExtras(){
+    /**
+     * Extracts the arguments that this fragment was initialized with
+     */
+git st    private void handleArguments(){
         String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
         DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
         if(databaseHandler.doesEntryHandlerExist(dateString)){
