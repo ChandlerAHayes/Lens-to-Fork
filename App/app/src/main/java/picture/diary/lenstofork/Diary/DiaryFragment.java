@@ -34,7 +34,7 @@ public class DiaryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_diary, container, false);
+        final View view = inflater.inflate(R.layout.fragment_diary, container, false);
 
         //------ Get EntryHandler for date given
         handleExtras();
@@ -45,9 +45,12 @@ public class DiaryFragment extends Fragment {
         view.post(new Runnable() {
             @Override
             public void run() {
-                for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-                    images[i].resizeImage(getView());
-                }
+//                for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+//                    images[i].resizeImage(getView());
+//                }
+                DimensionsDiaryFragment d = DimensionsDiaryFragment.getInstance();
+                d.setWidth(view.getWidth());
+                d.setHeight(view.getHeight());
             }
         });
 

@@ -6,37 +6,27 @@ import android.graphics.BitmapFactory;
 public class Entry {
     private  Long id;
     private String filepath;
-    private Bitmap image;
     private String title;
     private  String caption;
 
     //------- Constructors
     public Entry(String filePath, String title, String caption){
         id = null;
-
         this.filepath = filePath;
-        image = BitmapFactory.decodeFile(filepath);
-
         this.title = title;
         this.caption = caption;
     }
 
     public Entry(Long id, String filePath, String title, String caption){
         this.id = id;
-
         this.filepath = filePath;
-        image = BitmapFactory.decodeFile(filepath);
-
         this.title = title;
         this.caption = caption;
     }
 
     public Entry(String title, String caption){
         id = null;
-
         filepath = "";
-        image = null;
-
         this.title = title;
         this.caption = caption;
     }
@@ -49,12 +39,11 @@ public class Entry {
 
     public void setImageFilePath(String filePath) {
         this.filepath = filePath;
-        image = BitmapFactory.decodeFile(filepath);
     }
 
     // Bitmap Image
     public Bitmap getImage(){
-        return image;
+        return BitmapFactory.decodeFile(filepath);
     }
 
     // Title

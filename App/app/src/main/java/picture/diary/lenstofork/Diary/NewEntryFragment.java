@@ -82,6 +82,7 @@ public class NewEntryFragment extends Fragment {
                 // create new entry
                 String title = titleTxt.getText().toString();
                 String caption = captionTxt.getText().toString();
+                imageFilePath = imageHandler.getFilepath();
                 Entry entry = new Entry(imageFilePath, title, caption);
                 entry.getImageFilePath();
 
@@ -231,19 +232,22 @@ public class NewEntryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
 
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
             imageHandler.addNewImageToGallery();
-            imageFilePath = imageHandler.getFilepath();
+            imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(), entryImage);
+
             setImageInView();
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
-                imageFilePath = imageHandler.getFilepath();
+                imageHandler.resizeAndInsertImage(dimensions.getWidth(),
+                        dimensions.getHeight(), entryImage);
 
-                setImageInView();
+//                setImageInView();
             }
         }
     }
