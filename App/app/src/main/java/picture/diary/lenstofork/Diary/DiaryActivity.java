@@ -146,6 +146,9 @@ public class DiaryActivity extends AppCompatActivity {
         return intent;
     }
 
+    /**
+     * Handles the extras that the Activity were initalized with
+     */
     private void handleExtras(){
         if(getIntent().getExtras() == null){
             currentDate = Calendar.getInstance();
@@ -164,7 +167,10 @@ public class DiaryActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * Opens a dialog that displays a CalendarView so that the user can pick a date to display.
+     * The method handles opening the fragment to the corresponding date.
+     */
     private void calendarDialog(){
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_date_picker);

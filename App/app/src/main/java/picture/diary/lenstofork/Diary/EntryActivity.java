@@ -16,9 +16,10 @@ import picture.diary.lenstofork.R;
 public class EntryActivity extends AppCompatActivity {
     private String dateString;
 
-    // contsants
-    private static final String EXTRA_FRAGMENT_TAG = "FRAGMENT TAG";
-    private static final String EXTRA_ENTRY_HANDLER = "ENTRY_HANDLER";
+    // constants
+    private static final String EXTRA_FRAGMENT_TAG = "Extra Fragment Tag";
+    private static final String EXTRA_ENTRY_HANDLER = "Extra Entry Handler";
+    private static final String EXTRA_ENTRY_POSITION = "Extra Entry Position";
     private static int REQUEST_CODE_READ_PERMISSION = 1;
 
     @Override
@@ -39,13 +40,23 @@ public class EntryActivity extends AppCompatActivity {
         dateString = extras.getStringExtra(EXTRA_ENTRY_HANDLER);
         String fragmentTag = extras.getStringExtra(EXTRA_FRAGMENT_TAG);
 
-        final FragmentController controller = new FragmentController(getSupportFragmentManager());
         // determine which fragment to display
+        final FragmentController controller = new FragmentController(getSupportFragmentManager());
+
         if(fragmentTag.equals(NewEntryFragment.TAG)){
             controller.openFragment(NewEntryFragment.newInstance(dateString), NewEntryFragment.TAG);
         }
+        else if(fragmentTag.equals(DetailFragment.TAG)){
+            int position = extras.getIntExtra(EXTRA_ENTRY_POSITION, 0);
+            controller.openFragment(DetailFragment.newInstance(position, dateString),
+                    NewEntryFragment.TAG);
+        }
     }
 
+    /**
+     * Asks the user for permission to read external storage so that the app can copy the image the
+     * user picks from gallery
+     */
     private void askForPermission(){
         if(ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -69,6 +80,18 @@ public class EntryActivity extends AppCompatActivity {
         Intent intent = new Intent(activity, EntryActivity.class);
         intent.putExtra(EXTRA_FRAGMENT_TAG, fragmentTag);
         intent.putExtra(EXTRA_ENTRY_HANDLER, dateString);
+
+        return intent;
+    }
+
+    public static Intent newInstance(String fragmentTag, String dateString, int entryPosition,
+                                     Activity activity)
+    {
+        // put extras in an intent
+        Intent intent = new Intent(activity, EntryActivity.class);
+        intent.putExtra(EXTRA_FRAGMENT_TAG, fragmentTag);
+        intent.putExtra(EXTRA_ENTRY_HANDLER, dateString);
+        intent.putExtra(EXTRA_ENTRY_POSITION, entryPosition);
 
         return intent;
     }

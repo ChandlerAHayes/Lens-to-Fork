@@ -170,7 +170,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * @param id the id of the entry to retrieve
      * @return an Entry object
      */
-    private Entry getEntry(long id){
+    public Entry getEntry(long id){
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_ENTRY, new String[]{

@@ -1,0 +1,329 @@
+package picture.diary.lenstofork.Diary;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import Entry.EntryHandler;
+import Entry.Entry;
+import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
+import picture.diary.lenstofork.Diary.Utils.ImageHandler;
+import picture.diary.lenstofork.R;
+
+public class DetailFragment extends Fragment {
+    // widgets
+    private TextView titleTxt;
+    private TextView captionTxt;
+    private EditText titleEditTxt;
+    private EditText captionEditTxt;
+    private ImageView image;
+    private Button submitBttn;
+
+    // variables
+    private DatabaseHandler database;
+    private EntryHandler entryHandler;
+    private Entry entry;
+    private int position = -1;
+    private ImageHandler imageHandler;
+    private boolean canCopyImages = false;
+
+    private String newFilepath = "";
+    private String title;
+    private String caption;
+
+    // constants
+    public static final String TAG = "DetailFragment";
+    private static final String ARG_ENTRY_HANDLER = "Arg Entry Handler";
+    private static final String ARG_ENTRY_POSITION = "Arg Entry Position";
+    private static final int REQUEST_CODE_READ_PERMISSION = 3;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // get Entry from database
+        database = new DatabaseHandler(getContext());
+        Bundle arguments = getArguments();
+        entryHandler = database.getEntryHandler(arguments.getString(ARG_ENTRY_HANDLER));
+        position = arguments.getInt(ARG_ENTRY_POSITION);
+        entry = entryHandler.getEntry(position);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState)
+    {
+        super.onCreateView(inflater, container, savedInstanceState);
+        setHasOptionsMenu(true);
+
+        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        title = entry.getTitle();
+        caption = entry.getCaption();
+
+        // set up widgets
+        titleTxt = (TextView) view.findViewById(R.id.txt_title);
+        titleTxt.setText(title);
+        captionTxt = (TextView) view.findViewById(R.id.txt_caption);
+        captionTxt.setText(caption);
+
+        titleEditTxt = (EditText) view.findViewById(R.id.edit_txt_title);
+        titleEditTxt.setText(title);
+        captionEditTxt = (EditText) view.findViewById(R.id.edit_txt_caption);
+        captionEditTxt.setText(caption);
+
+        image = (ImageView) view.findViewById(R.id.img);
+        image.setImageBitmap(entry.getImage());
+        image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageHandler = new ImageHandler(getActivity(), TAG);
+                imageOptionsDialog();
+            }
+        });
+
+        submitBttn = (Button) view.findViewById(R.id.bttn_submit);
+        submitBttn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean hasEntryChanged = false; //represents if the entry's attributes have changed
+
+                // check if title has changed
+                if(!title.equals(titleEditTxt.getText().toString())){
+                    hasEntryChanged = true;
+                    entry.setTitle(titleEditTxt.getText().toString());
+                }
+
+                //check if caption has changed
+                if(!caption.equals(captionEditTxt.getText().toString())){
+                    hasEntryChanged = true;
+                    entry.setCaption(captionEditTxt.getText().toString());
+                }
+
+                // check if image has changed
+                if(!newFilepath.equals("")){
+                    hasEntryChanged = true;
+                    entry.setImageFilePath(newFilepath);
+                }
+
+                // update entry in database if it has been changed
+                if(hasEntryChanged){
+                    entryHandler.updateEntry(position, entry);
+                    database.updateEntryHandler(entryHandler);
+                }
+
+                // go back to DiaryActivity
+                Intent intent = new DiaryActivity().newInstance(getActivity(),
+                        entryHandler.getStringDate());
+                startActivity(intent);
+            }
+        });
+
+        return view;
+    }
+
+    //-------- Helper Methods
+
+    /**
+     * Gives the user to add a photo by either taking a picture or selecting one from their gallery
+     */
+    private void imageOptionsDialog(){
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.dialog_photo_picker);
+
+        //------- Initialize Widgets
+        // camera option
+        ImageView cameraImg = dialog.findViewById(R.id.img_camera);
+        cameraImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageHandler.takeNewPicture(DetailFragment.this);
+                dialog.dismiss();
+            }
+        });
+        TextView cameraTxt = dialog.findViewById(R.id.txt_camera);
+        cameraTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageHandler.takeNewPicture(DetailFragment.this);
+                dialog.dismiss();
+            }
+        });
+
+        // gallery option
+        ImageView galleryImg = dialog.findViewById(R.id.img_gallery);
+        galleryImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageHandler.selectImage(DetailFragment.this);
+                dialog.dismiss();
+            }
+        });
+        TextView galleryTxt = dialog.findViewById(R.id.txt_gallery);
+        galleryTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageHandler.selectImage(DetailFragment.this);
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * Toggles the visibility of the TextViews and EditViews to either be in edit mode or view mode
+     */
+    private void toggleEditMode(){
+        // enter edit mode
+        if(titleTxt.getVisibility() == View.VISIBLE){
+            titleTxt.setVisibility(View.GONE);
+            captionTxt.setVisibility(View.GONE);
+
+            titleEditTxt.setVisibility(View.VISIBLE);
+            captionEditTxt.setVisibility(View.VISIBLE);
+            submitBttn.setVisibility(View.VISIBLE);
+        }
+        // exit edit mode
+        else{
+            titleTxt.setVisibility(View.VISIBLE);
+            captionTxt.setVisibility(View.VISIBLE);
+
+            titleEditTxt.setVisibility(View.GONE);
+            captionEditTxt.setVisibility(View.GONE);
+            submitBttn.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * Deletes the entry from the database and returns to DiaryActivity after deletion.
+     */
+    private void deleteEntry(){
+        // remove entry
+        entryHandler.removeEntry(position);
+        // update database
+        database.updateEntryHandler(entryHandler);
+        // return to DiaryActivity
+        Intent intent = DiaryActivity.newInstance(getActivity(), entryHandler.getStringDate());
+        startActivity(intent);
+    }
+
+    /**
+     * Creates an AlertDialog that confirms if the user wants to delete the entry. If they do, then
+     * it passes off the deletion to the deleteEntry() method.
+     */
+    private void confirmDelete(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Are you sure you want to delete this entry?");
+        builder.setCancelable(true);
+
+        // yes button
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteEntry();
+            }
+        });
+
+        // no button
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+    //-------- Fragment Methods
+    public static DetailFragment newInstance(int entryPosition, String entryHandlerDate) {
+        DetailFragment fragment = new DetailFragment();
+
+        Bundle args = new Bundle();
+        args.putString(ARG_ENTRY_HANDLER, entryHandlerDate);
+        args.putInt(ARG_ENTRY_POSITION, entryPosition);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case R.id.edit:
+                toggleEditMode();
+
+                return true;
+
+            case R.id.delete:
+                confirmDelete();
+                return true;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.edit_menu, menu);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
+            DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
+            imageHandler.addNewImageToGallery();
+            imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(),
+                    image);
+        }
+        if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
+            if(data != null){
+                DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
+
+                Uri imgUri = data.getData();
+                imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
+                if(canCopyImages){
+                    imageHandler.resizeAndInsertImage(dimensions.getWidth(),
+                            dimensions.getHeight(), image);
+                }
+                else{
+                    imageHandler.setImageInView(image);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults)
+    {
+        if(requestCode == REQUEST_CODE_READ_PERMISSION){
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                canCopyImages = true;
+            }
+            else{
+                // permission denied
+                canCopyImages = false;
+            }
+        }
+    }
+}

@@ -4,8 +4,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -134,41 +132,6 @@ public class NewEntryFragment extends Fragment {
         dialog.show();
     }
 
-    /**
-     * Puts the image that is located at imageFilePath in the ImageView
-     *
-     * Taken from: https://developer.android.com/training/camera/photobasics
-     */
-    private void setImageInView() {
-        // Get the dimensions of the View
-        int targetW = entryImage.getWidth();
-        int targetH = entryImage.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(imageFilePath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // check if user didn't take picture
-        if(photoH == -1 || photoW == -1){
-            return;
-        }
-
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath, bmOptions);
-        entryImage.setImageBitmap(bitmap);
-    }
-
     //--------- Helper Methods
 
     /**
@@ -259,7 +222,7 @@ public class NewEntryFragment extends Fragment {
                             dimensions.getHeight(), entryImage);
                 }
                 else{
-                    setImageInView();
+                    imageHandler.setImageInView(entryImage);
                 }
             }
         }

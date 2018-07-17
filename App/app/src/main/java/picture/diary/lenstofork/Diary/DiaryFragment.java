@@ -27,8 +27,8 @@ public class DiaryFragment extends Fragment {
     private static EntryHandler entryHandler;
 
     // constants
-    private static final String ARG_ENTRY_HANDLER = "ARG_ENTRY_HANDLER";
     public static final String TAG = "DIARY_FRAGMENT";
+    private static final String ARG_ENTRY_HANDLER = "ARG_ENTRY_HANDLER";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -102,30 +102,13 @@ public class DiaryFragment extends Fragment {
     }
 
     /**
-     * Extracts the arguments that this fragment was initialized with
-     */
-    private void handleArguments(){
-        String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
-        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
-        if(databaseHandler.doesEntryHandlerExist(dateString)){
-            // get EntryHandler from database
-            entryHandler = databaseHandler.getEntryHandler(dateString);
-            entryHandler.getNumberOfEntries();
-        }
-        else{
-            // create EntryHandler for given date
-            entryHandler = new EntryHandler(dateString);
-        }
-    }
-
-    /**
      * With the given entry, it extracts its data and inserts it into the TextViews & ImageView
      * that correspond to the given index of the container it belongs in.
      *
      * @param entry the entry to extract its data and insert it into the TextViews & ImageView
      * @param index the index that the entry belongs in
      */
-    private void fillInEntryData(Entry entry, int index){
+    private void fillInEntryData(Entry entry, final int index){
         // insert title and caption
         titles[index].setText(entry.getTitle());
         captions[index].setText(entry.getCaption());
@@ -142,11 +125,23 @@ public class DiaryFragment extends Fragment {
             images[index].setImageBitmap(entry.getImage());
         }
 
-        // add on ClickListener to view Entry Details or Edit
+        // add onClickListener to view Entry Details or Edit
+        containers[index].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = EntryActivity.newInstance(DetailFragment.TAG,
+                        entryHandler.getStringDate(),index, getActivity());
+                startActivity(intent);
+            }
+        });
     }
 
-    
-    private void setUpAddEntryContainer(int index){
+    /**
+     * Set up the container that will hold the add a new entry box
+     *
+     * @param index the index of the container that will hold the new entry box
+     */
+    private void setUpAddEntryContainer(final int index){
         // set default picture for adding a new pic
         images[index].setImageResource(R.drawable.add_entry_teal);
         titles[index].setText("Add New Entry");
@@ -161,6 +156,25 @@ public class DiaryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+    }
+
+    //--------- Helper Methods
+
+    /**
+     * Extracts the arguments that this fragment was initialized with
+     */
+    private void handleArguments(){
+        String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
+        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+        if(databaseHandler.doesEntryHandlerExist(dateString)){
+            // get EntryHandler from database
+            entryHandler = databaseHandler.getEntryHandler(dateString);
+            entryHandler.getNumberOfEntries();
+        }
+        else{
+            // create EntryHandler for given date
+            entryHandler = new EntryHandler(dateString);
+        }
     }
 
     //------- Fragment Methods
