@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+
 import Entry.EntryHandler;
 import Entry.Entry;
 import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
@@ -26,15 +28,24 @@ import picture.diary.lenstofork.Diary.Utils.ImageHandler;
 import picture.diary.lenstofork.R;
 
 public class DetailFragment extends Fragment {
-    // widgets
-    private TextView titleTxt;
-    private TextView captionTxt;
-    private EditText titleEditTxt;
-    private EditText captionEditTxt;
+    //------ Widgets
     private ImageView image;
+    private TextView headerImage;
     private Button submitBttn;
+    // title
+    private TextView titleTxt;
+    private EditText titleEditTxt;
+    // caption
+    private TextView captionTxt;
+    private EditText captionEditTxt;
+    private TextView headerCaption;
+    // description
+    private TextView descriptionTxt;
+    private EditText descriptionEditTxt;
+    private TextView headerDescription;
 
     // variables
+    private boolean isInEditMode = false;
     private DatabaseHandler database;
     private EntryHandler entryHandler;
     private Entry entry;
@@ -42,9 +53,11 @@ public class DetailFragment extends Fragment {
     private ImageHandler imageHandler;
     private boolean canCopyImages = false;
 
+    // Entry attributes
     private String newFilepath = "";
-    private String title;
-    private String caption;
+    private String title = "";
+    private String caption = "";
+    private String description = "";
 
     // constants
     public static final String TAG = "DetailFragment";
@@ -61,6 +74,10 @@ public class DetailFragment extends Fragment {
         entryHandler = database.getEntryHandler(arguments.getString(ARG_ENTRY_HANDLER));
         position = arguments.getInt(ARG_ENTRY_POSITION);
         entry = entryHandler.getEntry(position);
+
+        // put date in Toolbar
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yy");
+        getActivity().setTitle("Details: " + sdf.format(entryHandler.getDate().getTime()));
     }
 
     @Override
@@ -75,16 +92,19 @@ public class DetailFragment extends Fragment {
         title = entry.getTitle();
         caption = entry.getCaption();
 
-        // set up widgets
+        //------- Set Up Widgets
         titleTxt = (TextView) view.findViewById(R.id.txt_title);
-        titleTxt.setText(title);
-        captionTxt = (TextView) view.findViewById(R.id.txt_caption);
-        captionTxt.setText(caption);
-
         titleEditTxt = (EditText) view.findViewById(R.id.edit_txt_title);
-        titleEditTxt.setText(title);
+
+        captionTxt = (TextView) view.findViewById(R.id.txt_caption);
         captionEditTxt = (EditText) view.findViewById(R.id.edit_txt_caption);
-        captionEditTxt.setText(caption);
+        headerCaption = (TextView) view.findViewById(R.id.header_caption);
+
+        descriptionTxt = (TextView) view.findViewById(R.id.txt_description);
+        descriptionEditTxt = (EditText) view.findViewById(R.id.edit_txt_description);
+        headerDescription = (TextView) view.findViewById(R.id.header_description);
+
+        configureTextViews();
 
         image = (ImageView) view.findViewById(R.id.img);
         image.setImageBitmap(entry.getImage());
@@ -100,36 +120,7 @@ public class DetailFragment extends Fragment {
         submitBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean hasEntryChanged = false; //represents if the entry's attributes have changed
-
-                // check if title has changed
-                if(!title.equals(titleEditTxt.getText().toString())){
-                    hasEntryChanged = true;
-                    entry.setTitle(titleEditTxt.getText().toString());
-                }
-
-                //check if caption has changed
-                if(!caption.equals(captionEditTxt.getText().toString())){
-                    hasEntryChanged = true;
-                    entry.setCaption(captionEditTxt.getText().toString());
-                }
-
-                // check if image has changed
-                if(!newFilepath.equals("")){
-                    hasEntryChanged = true;
-                    entry.setImageFilePath(newFilepath);
-                }
-
-                // update entry in database if it has been changed
-                if(hasEntryChanged){
-                    entryHandler.updateEntry(position, entry);
-                    database.updateEntryHandler(entryHandler);
-                }
-
-                // go back to DiaryActivity
-                Intent intent = new DiaryActivity().newInstance(getActivity(),
-                        entryHandler.getStringDate());
-                startActivity(intent);
+                submitEntry();
             }
         });
 
@@ -189,24 +180,110 @@ public class DetailFragment extends Fragment {
      * Toggles the visibility of the TextViews and EditViews to either be in edit mode or view mode
      */
     private void toggleEditMode(){
-        // enter edit mode
-        if(titleTxt.getVisibility() == View.VISIBLE){
+        if(isInEditMode){
+            // make TextViews invisible and make EditTexts visible
             titleTxt.setVisibility(View.GONE);
             captionTxt.setVisibility(View.GONE);
+            descriptionTxt.setVisibility(View.GONE);
 
             titleEditTxt.setVisibility(View.VISIBLE);
             captionEditTxt.setVisibility(View.VISIBLE);
-            submitBttn.setVisibility(View.VISIBLE);
-        }
-        // exit edit mode
-        else{
-            titleTxt.setVisibility(View.VISIBLE);
-            captionTxt.setVisibility(View.VISIBLE);
+            descriptionEditTxt.setVisibility(View.VISIBLE);
 
+            // just in case they're not visible
+            headerCaption.setVisibility(View.VISIBLE);
+            headerDescription.setVisibility(View.VISIBLE);
+        }
+        else{
+            // make TextViews visible
+            // title
+            if(!title.equals("")){
+                titleTxt.setVisibility(View.VISIBLE);
+            }
+            // caption
+            if(!caption.equals("")){
+                captionTxt.setVisibility(View.VISIBLE);
+            }
+            else{
+                headerCaption.setVisibility(View.GONE);
+            }
+            // description
+            if(!description.equals("")){
+                descriptionTxt.setVisibility(View.VISIBLE);
+            }
+            else{
+                headerDescription.setVisibility(View.GONE);
+            }
+
+            // make EditTexts invisible
             titleEditTxt.setVisibility(View.GONE);
             captionEditTxt.setVisibility(View.GONE);
-            submitBttn.setVisibility(View.GONE);
+            descriptionEditTxt.setVisibility(View.GONE);
         }
+    }
+
+    /**
+     * Configure the TextViews to show Entry info
+     */
+    private void configureTextViews(){
+        // check title
+        if(title.equals("")){
+            // there's no title, so make it invisible
+            titleTxt.setVisibility(View.GONE);
+
+        }
+
+        // check caption
+        if(caption.equals("")){
+            // there's no caption, so make it invisible
+            captionTxt.setVisibility(View.GONE);
+            headerCaption.setVisibility(View.GONE);
+        }
+
+        // check description
+        if(description.equals("")){
+            // there's no description, so make it invisible
+            descriptionTxt.setVisibility(View.GONE);
+            headerDescription.setVisibility(View.GONE);
+        }
+    }
+
+    //---------- Editing Entries Methods
+
+    /**
+     *
+     */
+    private void submitEntry(){
+        boolean hasEntryChanged = false; //represents if the entry's attributes have changed
+
+        // check if title has changed
+        if(!title.equals(titleEditTxt.getText().toString())){
+            hasEntryChanged = true;
+            entry.setTitle(titleEditTxt.getText().toString());
+        }
+
+        //check if caption has changed
+        if(!caption.equals(captionEditTxt.getText().toString())){
+            hasEntryChanged = true;
+            entry.setCaption(captionEditTxt.getText().toString());
+        }
+
+        // check if image has changed
+        if(!newFilepath.equals("")){
+            hasEntryChanged = true;
+            entry.setImageFilePath(newFilepath);
+        }
+
+        // update entry in database if it has been changed
+        if(hasEntryChanged){
+            entryHandler.updateEntry(position, entry);
+            database.updateEntryHandler(entryHandler);
+        }
+
+        // go back to DiaryActivity
+        Intent intent = new DiaryActivity().newInstance(getActivity(),
+                entryHandler.getStringDate());
+        startActivity(intent);
     }
 
     /**
@@ -263,10 +340,23 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.edit_menu, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()){
             case R.id.edit:
+                // toggle edit mode
+                if(isInEditMode){
+                    isInEditMode = false;
+                }
+                else{
+                    isInEditMode = true;
+                }
                 toggleEditMode();
 
                 return true;
@@ -277,12 +367,6 @@ public class DetailFragment extends Fragment {
         }
 
         return true;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.edit_menu, menu);
     }
 
     @Override
