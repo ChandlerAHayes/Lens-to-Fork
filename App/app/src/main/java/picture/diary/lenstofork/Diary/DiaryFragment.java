@@ -13,8 +13,10 @@ import java.io.File;
 
 import Entry.Entry;
 import Entry.EntryHandler;
-import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
 import picture.diary.lenstofork.R;
+import picture.diary.lenstofork.Utils.DatabaseHandler;
+import picture.diary.lenstofork.Utils.Dimensions;
+import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class DiaryFragment extends Fragment {
     // widgets
@@ -44,9 +46,9 @@ public class DiaryFragment extends Fragment {
         view.post(new Runnable() {
             @Override
             public void run() {
-                DimensionsDiaryFragment d = DimensionsDiaryFragment.getInstance();
-                d.setWidth(view.getWidth());
-                d.setHeight(view.getHeight());
+                Dimensions d = Dimensions.getInstance();
+                d.setDiaryWidth(view.getWidth());
+                d.setDiaryHeight(view.getHeight());
             }
         });
 
@@ -121,8 +123,13 @@ public class DiaryFragment extends Fragment {
             images[index].setImageResource(R.drawable.ic_launcher_foreground);
         }
         else{
-            // insert image
-            images[index].setImageBitmap(entry.getImage());
+            // resize and insert image into ImageView
+            Dimensions dimensions = Dimensions.getInstance();
+            Double widthDouble = dimensions.getDiaryWidth() * .48;
+            Double heightDouble = dimensions.getDiaryHeight() * .31;
+            int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+            new ImageHandler(getActivity(), TAG).loadIntoImageView(minDimension, minDimension,
+                    filepath, images[index]);
         }
 
         // add onClickListener to view Entry Details or Edit

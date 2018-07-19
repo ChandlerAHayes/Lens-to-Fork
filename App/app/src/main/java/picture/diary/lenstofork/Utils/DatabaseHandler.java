@@ -1,4 +1,4 @@
-package picture.diary.lenstofork.Diary.Utils;
+package picture.diary.lenstofork.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;

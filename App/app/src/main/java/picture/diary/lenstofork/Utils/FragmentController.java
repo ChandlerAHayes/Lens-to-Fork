@@ -1,4 +1,4 @@
-package picture.diary.lenstofork.Diary.Utils;
+package picture.diary.lenstofork.Utils;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

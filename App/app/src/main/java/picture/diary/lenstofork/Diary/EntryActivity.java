@@ -10,7 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import picture.diary.lenstofork.Diary.Utils.FragmentController;
+import picture.diary.lenstofork.Utils.FragmentController;
 import picture.diary.lenstofork.R;
 
 public class EntryActivity extends AppCompatActivity {

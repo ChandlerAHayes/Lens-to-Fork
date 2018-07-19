@@ -15,7 +15,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import picture.diary.lenstofork.Diary.Utils.FragmentController;
+import picture.diary.lenstofork.Utils.FragmentController;
 import picture.diary.lenstofork.R;
 
 public class DiaryActivity extends AppCompatActivity {

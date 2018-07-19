@@ -72,7 +72,7 @@
                     android:layout_marginTop="5dp"
                     android:text="Tap on the photo to change it"
                     android:textColor="@android:color/white"
-                    android:textColorHint="@color/text_hint_white"
+                    android:textColorHint="@color/dividerColor"
                     android:visibility="gone" />
             </RelativeLayout>
 

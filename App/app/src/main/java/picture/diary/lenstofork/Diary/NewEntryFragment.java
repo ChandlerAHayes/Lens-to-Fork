@@ -20,9 +20,10 @@ import android.widget.TextView;
 
 import Entry.Entry;
 import Entry.EntryHandler;
-import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Diary.Utils.ImageHandler;
 import picture.diary.lenstofork.R;
+import picture.diary.lenstofork.Utils.DatabaseHandler;
+import picture.diary.lenstofork.Utils.Dimensions;
+import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class NewEntryFragment extends Fragment {
     //widgets
@@ -210,24 +211,29 @@ public class NewEntryFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
-            DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
+            Dimensions dimensions = Dimensions.getInstance();
             imageHandler.addNewImageToGallery();
-            imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(),
-                    entryImage);
+            String filepath = imageHandler.getFilepath();
+
+            // resize and insert image into ImageView
+            Double widthDouble = dimensions.getDiaryWidth() * .48;
+            Double heightDouble = dimensions.getDiaryHeight() * .31;
+            int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+            imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
-                DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
+                Dimensions dimensions = Dimensions.getInstance();
 
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
-                if(canCopyImages){
-                    imageHandler.resizeAndInsertImage(dimensions.getWidth(),
-                            dimensions.getHeight(), entryImage);
-                }
-                else{
-                    imageHandler.setImageInView(entryImage);
-                }
+                String filepath = imageHandler.getFilepath();
+
+                // resize and insert image into ImageView
+                Double widthDouble = dimensions.getDiaryWidth() * .48;
+                Double heightDouble = dimensions.getDiaryHeight() * .31;
+                int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+                imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
             }
         }
     }

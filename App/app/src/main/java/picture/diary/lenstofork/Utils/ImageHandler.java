@@ -1,12 +1,9 @@
-package picture.diary.lenstofork.Diary.Utils;
+package picture.diary.lenstofork.Utils;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -16,7 +13,6 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -192,92 +188,13 @@ public class ImageHandler {
         return image;
     }
 
-    /**
-     * Resizes the image into a square image. The max dimensions are at most 1/2 of the given width
-     * or 1/3 of the given width. Once the image has been resized and saved, image is inserted
-     * into the given ImageView
-     *
-     * @param width the width of the DiaryFragment in pixels
-     * @param height the height of the DiaryFragment in pixels
-     * @param view the imageView of the current fragment (most likely NewEntryFragment
-     */
-    public void resizeAndInsertImage(int width, int height, final ImageView view){
-        width *= 0.48;
-        height *= 0.31;
 
-        int minDimension = Math.min(width, height);
-
-        Target customTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                try{
-                    new File(filepath).delete();
-                    File resizedFile = createImageFile();
-
-                    FileOutputStream outputStream = new FileOutputStream(resizedFile);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                    outputStream.flush();
-                    outputStream.close();
-
-                    // replace old file with newly resized file
-                    filepath = resizedFile.getAbsolutePath();
-                    imageFile = resizedFile;
-
-                    // load resized image into ImageView
-                    Picasso.get()
-                            .load(new File(filepath))
-                            .into(view);
-                } catch(IOException e){
-                    Log.e(tag, "Failed to overwrite file image: " + e.getMessage());
-                }
-            }
-
-            @Override
-            public void onBitmapFailed(Exception e, Drawable errorDrawable) {}
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {}
-        };
-
+    public void loadIntoImageView(int width, int height, String filepath, ImageView view){
         Picasso.get()
                 .load(new File(filepath))
-                .resize(minDimension, minDimension)
+                .resize(width, height)
                 .centerCrop()
-                .into(customTarget);
-    }
-
-    /**
-     * Puts the image that is located at imageFilePath in the ImageView
-     *
-     * Taken from: https://developer.android.com/training/camera/photobasics
-     */
-    public void setImageInView(ImageView imageView) {
-        // Get the dimensions of the View
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filepath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // check if user didn't take picture
-        if(photoH == -1 || photoW == -1){
-            return;
-        }
-
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(filepath, bmOptions);
-        imageView.setImageBitmap(bitmap);
+                .into(view);
     }
 
     //-------- Setter & Getters

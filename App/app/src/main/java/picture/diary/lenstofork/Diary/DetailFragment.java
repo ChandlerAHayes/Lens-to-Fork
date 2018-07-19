@@ -19,13 +19,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 
-import Entry.EntryHandler;
 import Entry.Entry;
-import picture.diary.lenstofork.Diary.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Diary.Utils.ImageHandler;
+import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
+import picture.diary.lenstofork.Utils.DatabaseHandler;
+import picture.diary.lenstofork.Utils.Dimensions;
+import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class DetailFragment extends Fragment {
     //------ Widgets
@@ -67,6 +71,8 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        imageHandler = new ImageHandler(getActivity(), TAG);
 
         // get Entry from database
         database = new DatabaseHandler(getContext());
@@ -110,16 +116,33 @@ public class DetailFragment extends Fragment {
         configureTextViews();
 
         image = (ImageView) view.findViewById(R.id.img);
-        image.setImageBitmap(entry.getImage());
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imageHandler = new ImageHandler(getActivity(), TAG);
                 imageOptionsDialog();
             }
         });
         // only want it to be clickable in edit mode
         image.setClickable(false);
+
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                Dimensions d = Dimensions.getInstance();
+                if(d.getDetailWidth() == -1 || d.getDetailHeight() == -1){
+                    d.setDetailWidth(getView().getWidth());
+                    d.setDetailHeight(getView().getHeight());
+                }
+            }
+        });
+
+
+        // get dimensions of image
+        Dimensions dimensions= Dimensions.getInstance();
+        Double widthDouble = dimensions.getDiaryWidth() * .95;
+        Double heightDouble = dimensions.getDiaryHeight() * .48;
+        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+        imageHandler.loadIntoImageView(minDimension, minDimension, entry.getImageFilePath(), image);
 
         submitBttn = (Button) view.findViewById(R.id.bttn_submit);
         submitBttn.setOnClickListener(new View.OnClickListener() {
@@ -416,28 +439,36 @@ public class DetailFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
-            DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
+            Dimensions dimensions = Dimensions.getInstance();
             imageHandler.addNewImageToGallery();
-            imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(),
-                    image);
             filepath = imageHandler.getFilepath();
+
+            // resize and insert image into ImageView
+            int minDimension = Math.min(dimensions.getDiaryWidth(), dimensions.getDiaryHeight());
+            Picasso.get()
+                    .load(new File(filepath))
+                    .resize(minDimension, minDimension)
+                    .centerCrop()
+                    .into(image);
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
-                DimensionsDiaryFragment dimensions = DimensionsDiaryFragment.getInstance();
-
+                Dimensions dimensions = Dimensions.getInstance();
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
-                if(canCopyImages){
-                    imageHandler.resizeAndInsertImage(dimensions.getWidth(),
-                            dimensions.getHeight(), image);
-                }
-                else{
-                    imageHandler.setImageInView(image);
-                }
+                filepath = imageHandler.getFilepath();
+
+                // resize and insert image into ImageView
+                Double widthDouble = dimensions.getDiaryWidth() * .48;
+                Double heightDouble = dimensions.getDiaryHeight() * .31;
+                int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+                Picasso.get()
+                        .load(new File(filepath))
+                        .resize(minDimension, minDimension)
+                        .centerCrop()
+                        .into(image);
             }
 
-            filepath = imageHandler.getFilepath();
         }
     }
 
