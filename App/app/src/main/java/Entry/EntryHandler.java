@@ -33,27 +33,27 @@ public class EntryHandler implements Serializable {
     }
 
     //-------- Handling Entries
-    /**
-     * Adds a new entry to the EntryHandler. If the limit of 6 entries has been reached, then
-     * the method will return false.
-     *
-     * @param imageFilePath the image for the entry
-     * @param title the entry's title. Can be an empty string
-     * @param caption the entry's caption. Can be an empty string
-     * @return  true if there is room for another entry, false otherwise
-     */
-    public boolean addEntry(String imageFilePath, String title, String caption){
-        // cannot have more than 6 entries
-        if(numEntries == ENTRY_LIMIT){
-            return false;
-        }
-        else{
-            Entry newEntry = new Entry(imageFilePath, title, caption);
-            entries[numEntries] = newEntry;
-            numEntries++;
-            return true;
-        }
-    }
+//    /**
+//     * Adds a new entry to the EntryHandler. If the limit of 6 entries has been reached, then
+//     * the method will return false.
+//     *
+//     * @param imageFilePath the image for the entry
+//     * @param title the entry's title. Can be an empty string
+//     * @param caption the entry's caption. Can be an empty string
+//     * @return  true if there is room for another entry, false otherwise
+//     */
+//    public boolean addEntry(String imageFilePath, String title, String caption){
+//        // cannot have more than 6 entries
+//        if(numEntries == ENTRY_LIMIT){
+//            return false;
+//        }
+//        else{
+//            Entry newEntry = new Entry(imageFilePath, title, caption);
+//            entries[numEntries] = newEntry;
+//            numEntries++;
+//            return true;
+//        }
+//    }
 
     /**
      * Adds a new entry to the EntryHandler. If the limit of 6 entries has been reached, then

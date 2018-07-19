@@ -25,7 +25,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_ID = "id";
     public static final String KEY_IMG = "image_file_path";
     public static final String KEY_TITLE = "title";
-    public static final String KEY_NOTE = "note";
+    public static final String KEY_CAPTION = "caption";
+    public static final String KEY_DESCRIPTION = "description";
 
     //------- EntryHandler Table
     public static final String TABLE_ENTRY_HANDLER = "entry_handler";
@@ -49,7 +50,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 KEY_IMG + " TEXT, " +
                 KEY_TITLE + " TEXT, " +
-                KEY_NOTE + " TEXT)";
+                KEY_CAPTION + " TEXT, " +
+                KEY_DESCRIPTION + " TEXT)";
+
         String createHandler =  "CREATE TABLE " + TABLE_ENTRY_HANDLER + "(" +
                 KEY_DATE + " TEXT PRIMARY KEY," +
                 KEY_ENTRY0 + " INTEGER, " +
@@ -82,7 +85,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void addEntries(EntryHandler handler){
         SQLiteDatabase db = this.getWritableDatabase();
 
-
         Entry[] entries = handler.getEntries();
         Long[] entryIDs = new Long[6];
 
@@ -107,12 +109,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         handler.updateEntries(entryIDs);
     }
 
+    /**
+     * Add the given entry to the database
+     *
+     * @param entry the entry to add
+     * @param db the database connection
+     * @return returns the id (Long) of the newly added entry
+     */
     private Long addEntry(Entry entry, SQLiteDatabase db){
         // make a new row in the Entries table
         ContentValues values = new ContentValues();
         values.put(KEY_IMG, entry.getImageFilePath());
         values.put(KEY_TITLE, entry.getTitle());
-        values.put(KEY_NOTE, entry.getCaption());
+        values.put(KEY_CAPTION, entry.getCaption());
+        values.put(KEY_DESCRIPTION, entry.getDescription());
 
         //insert row and save the id in the entryIDs variables
         long id = db.insert(TABLE_ENTRY, null, values);
@@ -174,17 +184,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_ENTRY, new String[]{
-                KEY_ID, KEY_IMG, KEY_TITLE, KEY_NOTE}, KEY_ID + "=?",
+                KEY_ID, KEY_IMG, KEY_TITLE, KEY_CAPTION, KEY_DESCRIPTION}, KEY_ID + "=?",
                 new String[] { String.valueOf(id) },
                 null, null, null, null);
 
         if(cursor.moveToFirst()){
-            String img = cursor.getString(1);
-            String title = cursor.getString(2);
-            String note = cursor.getString(3);
+            int imageIndex = cursor.getColumnIndex(KEY_IMG);
+            int titleIndex = cursor.getColumnIndex(KEY_TITLE);
+            int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
+            int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
+
+            String img = cursor.getString(imageIndex);
+            String title = cursor.getString(titleIndex);
+            String note = cursor.getString(captionIndex);
+            String description = cursor.getString(descriptionIndex);
 
             cursor.close();
-            return new Entry(id, img, title, note);
+            return new Entry(id, img, title, note, description);
         }
         else{
             cursor.close();
@@ -243,19 +259,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()){
             do{
-                /**
-                 * Column indices:
-                 * 0 --> id
-                 * 1 --> image file path
-                 * 2 --> title
-                 * 3 --> note
-                 */
+                int idIndex = cursor.getColumnIndex(KEY_ID);
+                int imageIndex = cursor.getColumnIndex(KEY_IMG);
+                int titleIndex = cursor.getColumnIndex(KEY_TITLE);
+                int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
+                int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
 
-                Long id = cursor.getLong(0);
-                String img = cursor.getString(1);
-                String title = cursor.getString(2);
-                String note = cursor.getString(3);
-                Entry entry = new Entry(id, img, title, note);
+                Long id = cursor.getLong(idIndex);
+                String img = cursor.getString(imageIndex);
+                String title = cursor.getString(titleIndex);
+                String caption = cursor.getString(captionIndex);
+                String description = cursor.getString(descriptionIndex);
+
+                Entry entry = new Entry(id, img, title, caption, description);
                 list.add(entry);
             } while(cursor.moveToNext());
         }
@@ -313,43 +329,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ArrayList<Entry> oldEntries = new ArrayList<>(Arrays.asList(oldHandler.getEntries()));
         ArrayList<Entry> newEntries = new ArrayList<>(Arrays.asList(handler.getEntries()));
 
-//        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-//            // if oldEntry is not in the newEntries list, delete it from the Entry table
-//            Entry oldEntry = oldEntries.get(i);
-//            Entry newEntry = newEntries.get(i);
-//            if(newEntry == null && oldEntry == null){
-//                // do nothing b/c both entries are null
-//                continue;
-//            }
-//            else if(newEntry == null && oldEntry != null){
-//                // delete old entry because it should be null
-//                deleteEntry(oldEntry, db);
-//            }
-//            else if(oldEntry == null && newEntry != null){
-//                // add the entry to the Entry table
-//                newEntry.setId(addEntry(newEntry, db));
-//            }
-//            else {
-//                // delete the removed entry from the Entry table & add the new entry
-//                if(!newEntries.contains(oldEntry)){
-//                    deleteEntry(oldEntry, db);
-//                    // add the entry to the Entry table
-//                    long newID = addEntry(newEntries.get(i), db);
-//                    newEntries.get(i).setId(newID);
-//                }
-//                // update the changed entry
-//                else if(oldEntries.contains(newEntry)){
-//                    // update the entry in the Entry table
-//                    updateEntry(newEntry, db);
-//                }
-//            }
-//
-//            // put the current position form the newEntries list into values
-//            if(newEntries.get(i) != null){
-//                values.put("entry"+i, newEntries.get(i).getId());
-//            }
-//        }
-
         // delete old entries and add new entries
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
             if(oldEntries.get(i) != null){
@@ -377,7 +356,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_IMG, entry.getImageFilePath());
         values.put(KEY_TITLE, entry.getTitle());
-        values.put(KEY_NOTE, entry.getCaption());
+        values.put(KEY_CAPTION, entry.getCaption());
+        values.put(KEY_DESCRIPTION, entry.getDescription());
 
         // update row
         return db.update(TABLE_ENTRY, values, KEY_ID + "=?",

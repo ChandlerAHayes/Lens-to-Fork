@@ -54,7 +54,7 @@ public class DetailFragment extends Fragment {
     private boolean canCopyImages = false;
 
     // Entry attributes
-    private String newFilepath = "";
+    private String filepath = "";
     private String title = "";
     private String caption = "";
     private String description = "";
@@ -89,8 +89,11 @@ public class DetailFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
+        // helps determine if the user has updated the entry by comparing with original values
         title = entry.getTitle();
         caption = entry.getCaption();
+        description = entry.getDescription();
+        filepath = entry.getImageFilePath();
 
         //------- Set Up Widgets
         titleTxt = (TextView) view.findViewById(R.id.txt_title);
@@ -115,6 +118,8 @@ public class DetailFragment extends Fragment {
                 imageOptionsDialog();
             }
         });
+        // only want it to be clickable in edit mode
+        image.setClickable(false);
 
         submitBttn = (Button) view.findViewById(R.id.bttn_submit);
         submitBttn.setOnClickListener(new View.OnClickListener() {
@@ -193,6 +198,10 @@ public class DetailFragment extends Fragment {
             // just in case they're not visible
             headerCaption.setVisibility(View.VISIBLE);
             headerDescription.setVisibility(View.VISIBLE);
+
+            image.setClickable(true);
+            submitBttn.setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.header_image).setVisibility(View.VISIBLE);
         }
         else{
             // make TextViews visible
@@ -219,6 +228,10 @@ public class DetailFragment extends Fragment {
             titleEditTxt.setVisibility(View.GONE);
             captionEditTxt.setVisibility(View.GONE);
             descriptionEditTxt.setVisibility(View.GONE);
+
+            image.setClickable(false);
+            submitBttn.setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.header_image).setVisibility(View.GONE);
         }
     }
 
@@ -230,7 +243,11 @@ public class DetailFragment extends Fragment {
         if(title.equals("")){
             // there's no title, so make it invisible
             titleTxt.setVisibility(View.GONE);
-
+        }
+        else {
+            // insert title
+            titleTxt.setText(title);
+            titleEditTxt.setText(title);
         }
 
         // check caption
@@ -239,12 +256,22 @@ public class DetailFragment extends Fragment {
             captionTxt.setVisibility(View.GONE);
             headerCaption.setVisibility(View.GONE);
         }
+        else{
+            // insert caption
+            captionTxt.setText(caption);
+            captionEditTxt.setText(caption);
+        }
 
         // check description
         if(description.equals("")){
             // there's no description, so make it invisible
             descriptionTxt.setVisibility(View.GONE);
             headerDescription.setVisibility(View.GONE);
+        }
+        else{
+            // insert description
+            descriptionTxt.setText(description);
+            descriptionEditTxt.setText(description);
         }
     }
 
@@ -258,20 +285,38 @@ public class DetailFragment extends Fragment {
 
         // check if title has changed
         if(!title.equals(titleEditTxt.getText().toString())){
+            title = titleEditTxt.getText().toString();
             hasEntryChanged = true;
-            entry.setTitle(titleEditTxt.getText().toString());
+            entry.setTitle(title);
+
+            titleTxt.setText(title);
+            titleEditTxt.setText(title);
         }
 
-        //check if caption has changed
+        // check if caption has changed
         if(!caption.equals(captionEditTxt.getText().toString())){
             hasEntryChanged = true;
+            caption = captionEditTxt.getText().toString();
             entry.setCaption(captionEditTxt.getText().toString());
+
+            captionTxt.setText(caption);
+            captionEditTxt.setText(caption);
+        }
+
+        // check if description has changed
+        if(!description.equals(descriptionEditTxt.getText().toString())){
+            hasEntryChanged = true;
+            description = descriptionEditTxt.getText().toString();
+            entry.setDescription(descriptionEditTxt.getText().toString());
+
+            descriptionTxt.setText(description);
+            descriptionEditTxt.setText(description);
         }
 
         // check if image has changed
-        if(!newFilepath.equals("")){
+        if(!filepath.equals(entry.getImageFilePath())){
             hasEntryChanged = true;
-            entry.setImageFilePath(newFilepath);
+            entry.setImageFilePath(filepath);
         }
 
         // update entry in database if it has been changed
@@ -280,10 +325,7 @@ public class DetailFragment extends Fragment {
             database.updateEntryHandler(entryHandler);
         }
 
-        // go back to DiaryActivity
-        Intent intent = new DiaryActivity().newInstance(getActivity(),
-                entryHandler.getStringDate());
-        startActivity(intent);
+        toggleEditMode();
     }
 
     /**
@@ -378,6 +420,7 @@ public class DetailFragment extends Fragment {
             imageHandler.addNewImageToGallery();
             imageHandler.resizeAndInsertImage(dimensions.getWidth(), dimensions.getHeight(),
                     image);
+            filepath = imageHandler.getFilepath();
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
@@ -393,6 +436,8 @@ public class DetailFragment extends Fragment {
                     imageHandler.setImageInView(image);
                 }
             }
+
+            filepath = imageHandler.getFilepath();
         }
     }
 

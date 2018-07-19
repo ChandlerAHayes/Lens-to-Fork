@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,8 +27,9 @@ import picture.diary.lenstofork.R;
 public class NewEntryFragment extends Fragment {
     //widgets
     private ImageView entryImage;
-    private TextView titleTxt;
-    private TextView captionTxt;
+    private EditText titleTxt;
+    private EditText captionTxt;
+    private EditText descriptionTxt;
     private Button submitBttn;
 
     //------- Variables
@@ -70,8 +72,9 @@ public class NewEntryFragment extends Fragment {
             }
         });
 
-        titleTxt = (TextView) view.findViewById(R.id.txt_entry_title);
-        captionTxt = (TextView) view.findViewById(R.id.txt_entry_caption);
+        titleTxt = (EditText) view.findViewById(R.id.txt_entry_title);
+        captionTxt = (EditText) view.findViewById(R.id.txt_entry_caption);
+        descriptionTxt = (EditText) view.findViewById(R.id.txt_entry_description);
 
         submitBttn = (Button) view.findViewById(R.id.bttn_submit);
         submitBttn.setOnClickListener(new View.OnClickListener() {
@@ -180,8 +183,9 @@ public class NewEntryFragment extends Fragment {
         // create new entry
         String title = titleTxt.getText().toString();
         String caption = captionTxt.getText().toString();
+        String description = descriptionTxt.getText().toString();
         imageFilePath = imageHandler.getFilepath();
-        Entry entry = new Entry(imageFilePath, title, caption);
+        Entry entry = new Entry(imageFilePath, title, caption, description);
         entry.getImageFilePath();
 
         // add new entry to database

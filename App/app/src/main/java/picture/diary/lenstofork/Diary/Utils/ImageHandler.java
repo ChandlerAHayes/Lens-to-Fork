@@ -211,10 +211,9 @@ public class ImageHandler {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 try{
-                    // delete old file
                     new File(filepath).delete();
-
                     File resizedFile = createImageFile();
+
                     FileOutputStream outputStream = new FileOutputStream(resizedFile);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
                     outputStream.flush();

@@ -3,32 +3,38 @@ package Entry;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.File;
+
 public class Entry {
     private  Long id;
-    private String filepath;
-    private String title;
-    private  String caption;
+    private String filepath = "";
+    private int imageDimension = -1;
+    private String title = "";
+    private String caption = "";
+    private String description = "";
 
     //------- Constructors
-    public Entry(String filePath, String title, String caption){
+    public Entry(String filePath, String title, String caption, String description){
         id = null;
         this.filepath = filePath;
         this.title = title;
         this.caption = caption;
+        this.description = description;
     }
 
-    public Entry(Long id, String filePath, String title, String caption){
+    public Entry(String title, String caption, String description){
+        id = null;
+        this.title = title;
+        this.caption = caption;
+        this.description = description;
+    }
+
+    public Entry(Long id, String filepath, String title, String caption, String description){
         this.id = id;
-        this.filepath = filePath;
+        this.filepath = filepath;
         this.title = title;
         this.caption = caption;
-    }
-
-    public Entry(String title, String caption){
-        id = null;
-        filepath = "";
-        this.title = title;
-        this.caption = caption;
+        this.description = description;
     }
 
     //-------- Setter & Getters
@@ -43,7 +49,12 @@ public class Entry {
 
     // Bitmap Image
     public Bitmap getImage(){
-        return BitmapFactory.decodeFile(filepath);
+        if(new File(filepath).exists()){
+            return BitmapFactory.decodeFile(filepath);
+        }
+        else{
+            return null;
+        }
     }
 
     // Title
@@ -73,6 +84,17 @@ public class Entry {
         return id;
     }
 
+    // Description
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    //-------- Object Methods
+
     @Override
     public boolean equals(Object obj) {
         if(this == obj){
@@ -88,7 +110,8 @@ public class Entry {
         //------ Compare attributes
         Entry entry = (Entry) obj;
         return ( filepath.equals(((Entry) obj).getImageFilePath()) && title.equals(((Entry) obj)
-                .getTitle()) && caption.equals(((Entry) obj).getCaption()) )
+                .getTitle()) && caption.equals(((Entry) obj).getCaption()) &&
+                description.equals(((Entry) obj).getDescription()) )
                 || id.equals(((Entry) obj).getId());
     }
 }

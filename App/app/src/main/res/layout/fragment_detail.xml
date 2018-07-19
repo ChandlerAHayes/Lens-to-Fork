@@ -1,127 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="15dp">
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/title_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/txt_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Breakfast"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display2" />
-
-        <EditText
-            android:id="@+id/edit_txt_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Title"
-            android:inputType="textPersonName"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            android:visibility="gone" />
-
-    </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title_layout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
-        app:srcCompat="@drawable/camera_colored" />
-
-    <TextView
-        android:id="@+id/header_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/img"
-        android:layout_below="@+id/img"
-        android:layout_marginTop="5dp"
-        android:text="Tap on the photo to change it"
-        android:visibility="gone" />
-
-    <RelativeLayout
-        android:id="@+id/caption_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/header_image"
-        android:layout_marginTop="15dp">
-
-        <TextView
-            android:id="@+id/header_caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Caption"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
-
-        <TextView
-            android:id="@+id/txt_caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/header_caption"
-            android:text="300 calories"
-            android:textSize="18sp" />
-
-        <EditText
-            android:id="@+id/edit_txt_caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/header_caption"
-            android:ems="10"
-            android:hint="Caption"
-            android:singleLine="true"
-            android:textSize="18sp"
-            android:visibility="gone" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/description_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/caption_layout"
-        android:layout_marginTop="15dp">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/header_description"
+        <RelativeLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/title_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:id="@+id/txt_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Breakfast"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                    android:textColor="@android:color/white" />
+
+                <EditText
+                    android:id="@+id/edit_txt_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Title"
+                    android:inputType="textPersonName"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@android:color/white"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/image_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/title_layout"
+                android:background="@color/colorAccent"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <ImageView
+                    android:id="@+id/img"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:adjustViewBounds="true"
+                    app:srcCompat="@drawable/camera_teal" />
+
+                <TextView
+                    android:id="@+id/header_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/img"
+                    android:layout_below="@+id/img"
+                    android:layout_marginTop="5dp"
+                    android:text="Tap on the photo to change it"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@color/text_hint_white"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/caption_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/image_layout"
+                android:layout_marginTop="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <TextView
+                    android:id="@+id/header_caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Caption"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                <TextView
+                    android:id="@+id/txt_caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/header_caption"
+                    android:text="Some caption...."
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/edit_txt_caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/header_caption"
+                    android:ems="10"
+                    android:hint="Caption"
+                    android:singleLine="true"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/description_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/caption_layout"
+                android:layout_marginTop="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp">
+
+                <TextView
+                    android:id="@+id/header_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                <TextView
+                    android:id="@+id/txt_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/header_description"
+                    android:text="Some description.........." />
+
+                <EditText
+                    android:id="@+id/edit_txt_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/header_description"
+                    android:ems="10"
+                    android:hint="Decsription"
+                    android:inputType="textPersonName"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+        <Button
+            android:id="@+id/bttn_submit"
+            style="@style/ColoredButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Description"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/layout"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
+            android:text="Submit"
+            android:visibility="visible" />
 
-        <TextView
-            android:id="@+id/txt_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/header_description"
-            android:text="Some description.........." />
-
-        <EditText
-            android:id="@+id/edit_txt_description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/header_description"
-            android:ems="10"
-            android:hint="Decsription"
-            android:inputType="textPersonName"
-            android:visibility="gone" />
     </RelativeLayout>
 
-    <Button
-        android:id="@+id/bttn_submit"
-        style="@style/ColoredButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Submit" />
-
-</RelativeLayout>
+</ScrollView>
