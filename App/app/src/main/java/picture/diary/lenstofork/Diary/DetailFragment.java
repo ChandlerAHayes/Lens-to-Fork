@@ -28,7 +28,6 @@ import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Utils.Dimensions;
 import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class DetailFragment extends Fragment {
@@ -93,7 +92,7 @@ public class DetailFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         setHasOptionsMenu(true);
 
-        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+        final View view = inflater.inflate(R.layout.fragment_detail, container, false);
 
         // helps determine if the user has updated the entry by comparing with original values
         title = entry.getTitle();
@@ -125,24 +124,39 @@ public class DetailFragment extends Fragment {
         // only want it to be clickable in edit mode
         image.setClickable(false);
 
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                Dimensions d = Dimensions.getInstance();
-                if(d.getDetailWidth() == -1 || d.getDetailHeight() == -1){
-                    d.setDetailWidth(getView().getWidth());
-                    d.setDetailHeight(getView().getHeight());
+        if(database.doesDimensionsExists(TAG)){
+            // check if values have changed compared to database
+            int[] dimensions = database.getDimensions(TAG);
+            Double widthDouble = dimensions[0] * 0.98;
+            Double heightDouble = dimensions[1] * 0.48;
+            int minDimensions = Math.min(widthDouble.intValue(), heightDouble.intValue());
+            imageHandler.loadIntoImageView(minDimensions, minDimensions, filepath, image);
+
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    int[] dimensions = database.getDimensions(TAG);
+                    // if width or height are different update values
+                    if(dimensions[0] != view.getWidth() || dimensions[1] != view.getHeight()){
+                        database.updateDimensions(TAG, view.getWidth(), view.getHeight());
+                    }
                 }
-            }
-        });
+            });
+        }
+        else{
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    Double widthDouble = view.getWidth() * 0.98;
+                    Double heightDouble = view.getHeight() * 0.48;
+                    int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+                    imageHandler.loadIntoImageView(minDimension, minDimension, filepath, image);
 
-
-        // get dimensions of image
-        Dimensions dimensions= Dimensions.getInstance();
-        Double widthDouble = dimensions.getDiaryWidth() * .95;
-        Double heightDouble = dimensions.getDiaryHeight() * .48;
-        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-        imageHandler.loadIntoImageView(minDimension, minDimension, entry.getImageFilePath(), image);
+                    // values need to be added to the database
+                    database.addDimensions(TAG, view.getWidth(), view.getHeight());
+                }
+            });
+        }
 
         submitBttn = (Button) view.findViewById(R.id.bttn_submit);
         submitBttn.setOnClickListener(new View.OnClickListener() {
@@ -301,7 +315,7 @@ public class DetailFragment extends Fragment {
     //---------- Editing Entries Methods
 
     /**
-     *
+     * Gets the values entered and updates the Entry with the database
      */
     private void submitEntry(){
         boolean hasEntryChanged = false; //represents if the entry's attributes have changed
@@ -391,7 +405,6 @@ public class DetailFragment extends Fragment {
         dialog.show();
     }
 
-
     //-------- Fragment Methods
     public static DetailFragment newInstance(int entryPosition, String entryHandlerDate) {
         DetailFragment fragment = new DetailFragment();
@@ -439,34 +452,52 @@ public class DetailFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
-            Dimensions dimensions = Dimensions.getInstance();
             imageHandler.addNewImageToGallery();
             filepath = imageHandler.getFilepath();
 
             // resize and insert image into ImageView
-            int minDimension = Math.min(dimensions.getDiaryWidth(), dimensions.getDiaryHeight());
-            Picasso.get()
-                    .load(new File(filepath))
-                    .resize(minDimension, minDimension)
-                    .centerCrop()
-                    .into(image);
-        }
-        if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
-            if(data != null){
-                Dimensions dimensions = Dimensions.getInstance();
-                Uri imgUri = data.getData();
-                imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
-                filepath = imageHandler.getFilepath();
-
-                // resize and insert image into ImageView
-                Double widthDouble = dimensions.getDiaryWidth() * .48;
-                Double heightDouble = dimensions.getDiaryHeight() * .31;
+            if(database.doesDimensionsExists(TAG)){
+                int[] results = database.getDimensions(TAG);
+                Double widthDouble = results[0] * 0.98;
+                Double heightDouble = results[1] * 0.48;
                 int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
                 Picasso.get()
                         .load(new File(filepath))
                         .resize(minDimension, minDimension)
                         .centerCrop()
                         .into(image);
+            }
+            else{
+                Picasso.get()
+                        .load(new File(filepath))
+                        .fit()
+                        .into(image);
+            }
+        }
+        if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
+            if(data != null){
+                Uri imgUri = data.getData();
+                imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
+                filepath = imageHandler.getFilepath();
+
+                // resize and insert image into ImageView
+                if(database.doesDimensionsExists(TAG)){
+                    int[] results = database.getDimensions(TAG);
+                    Double widthDouble = results[0] * 0.98;
+                    Double heightDouble = results[1] * 0.48;
+                    int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+                    Picasso.get()
+                            .load(new File(filepath))
+                            .resize(minDimension, minDimension)
+                            .centerCrop()
+                            .into(image);
+                }
+                else{
+                    Picasso.get()
+                            .load(new File(filepath))
+                            .fit()
+                            .into(image);
+                }
             }
 
         }

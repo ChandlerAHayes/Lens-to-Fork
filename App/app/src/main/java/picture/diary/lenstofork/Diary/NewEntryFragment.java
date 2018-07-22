@@ -22,7 +22,6 @@ import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Utils.Dimensions;
 import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class NewEntryFragment extends Fragment {
@@ -38,7 +37,7 @@ public class NewEntryFragment extends Fragment {
     private ImageHandler imageHandler;
     private String imageFilePath = "";
     private boolean canCopyImages = false;
-
+    private DatabaseHandler database;
 
     //------- Constants
     public static final String TAG = "New Entry Fragment";
@@ -50,6 +49,7 @@ public class NewEntryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         imageHandler = new ImageHandler(getActivity(), TAG);
+        database = new DatabaseHandler(getContext());
 
         checksReadingPermission();
     }
@@ -144,10 +144,9 @@ public class NewEntryFragment extends Fragment {
      * @param dateString the date that corresponds to the wanted EntryHandler
      */
     private void getEntryHandler(String dateString){
-        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
-        if(databaseHandler.doesEntryHandlerExist(dateString)){
+        if(database.doesEntryHandlerExist(dateString)){
             // get EntryHandler from database
-            entryHandler = databaseHandler.getEntryHandler(dateString);
+            entryHandler = database.getEntryHandler(dateString);
         }
         else{
             // create EntryHandler for today
@@ -211,27 +210,26 @@ public class NewEntryFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
-            Dimensions dimensions = Dimensions.getInstance();
             imageHandler.addNewImageToGallery();
             String filepath = imageHandler.getFilepath();
 
             // resize and insert image into ImageView
-            Double widthDouble = dimensions.getDiaryWidth() * .48;
-            Double heightDouble = dimensions.getDiaryHeight() * .31;
+            int[] results = database.getDimensions(DiaryFragment.TAG);
+            Double widthDouble = results[0] * .48;
+            Double heightDouble = results[1] * .31;
             int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
             imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
-                Dimensions dimensions = Dimensions.getInstance();
-
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
                 String filepath = imageHandler.getFilepath();
 
                 // resize and insert image into ImageView
-                Double widthDouble = dimensions.getDiaryWidth() * .48;
-                Double heightDouble = dimensions.getDiaryHeight() * .31;
+                int[] results = database.getDimensions(DiaryFragment.TAG);
+                Double widthDouble = results[0] * .48;
+                Double heightDouble = results[1] * .31;
                 int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
                 imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
             }

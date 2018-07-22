@@ -15,7 +15,6 @@ import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Utils.Dimensions;
 import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class DiaryFragment extends Fragment {
@@ -27,6 +26,8 @@ public class DiaryFragment extends Fragment {
 
     // variables
     private static EntryHandler entryHandler;
+    DatabaseHandler database;
+
 
     // constants
     public static final String TAG = "DIARY_FRAGMENT";
@@ -36,21 +37,36 @@ public class DiaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_diary, container, false);
+        database = new DatabaseHandler(getContext());
 
         //------ Get EntryHandler for date given
         handleArguments();
 
         setUpView(view);
 
-        // get dimensions of this fragment's view so image's can be resized in respect to it
-        view.post(new Runnable() {
-            @Override
-            public void run() {
-                Dimensions d = Dimensions.getInstance();
-                d.setDiaryWidth(view.getWidth());
-                d.setDiaryHeight(view.getHeight());
-            }
-        });
+        // check if dimensions need to be stored or updated
+        if(database.doesDimensionsExists(TAG)){
+           // check if values have changed compared to database
+           view.post(new Runnable() {
+               @Override
+               public void run() {
+                    int[] dimensions = database.getDimensions(TAG);
+                    // if width or height are different update values
+                    if(dimensions[0] != view.getWidth() || dimensions[1] != view.getHeight()){
+                        database.updateDimensions(TAG, view.getWidth(), view.getHeight());
+                    }
+               }
+           });
+        }
+        else{
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    // values need to be added to the database
+                    database.addDimensions(TAG, view.getWidth(), view.getHeight());
+                }
+            });
+        }
 
         return view;
     }
@@ -124,9 +140,9 @@ public class DiaryFragment extends Fragment {
         }
         else{
             // resize and insert image into ImageView
-            Dimensions dimensions = Dimensions.getInstance();
-            Double widthDouble = dimensions.getDiaryWidth() * .48;
-            Double heightDouble = dimensions.getDiaryHeight() * .31;
+            int[] results = database.getDimensions(TAG);
+            Double widthDouble = results[0] * 0.48;
+            Double heightDouble = results[1] * 0.31;
             int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
             new ImageHandler(getActivity(), TAG).loadIntoImageView(minDimension, minDimension,
                     filepath, images[index]);
@@ -151,7 +167,6 @@ public class DiaryFragment extends Fragment {
     private void setUpAddEntryContainer(final int index){
         // set default picture for adding a new pic
         images[index].setImageResource(R.drawable.add_entry_teal);
-        titles[index].setText("Add New Entry");
 
         // go to NewEntryFragment, to create a new Entry
         containers[index].setOnClickListener(new View.OnClickListener() {
@@ -172,10 +187,9 @@ public class DiaryFragment extends Fragment {
      */
     private void handleArguments(){
         String dateString = getArguments().getString(ARG_ENTRY_HANDLER);
-        DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
-        if(databaseHandler.doesEntryHandlerExist(dateString)){
+        if(database.doesEntryHandlerExist(dateString)){
             // get EntryHandler from database
-            entryHandler = databaseHandler.getEntryHandler(dateString);
+            entryHandler = database.getEntryHandler(dateString);
             entryHandler.getNumberOfEntries();
         }
         else{
