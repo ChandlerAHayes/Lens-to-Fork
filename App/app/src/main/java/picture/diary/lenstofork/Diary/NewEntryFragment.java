@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import Entry.CaptionColor;
 import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
@@ -31,6 +32,7 @@ public class NewEntryFragment extends Fragment {
     private EditText captionTxt;
     private EditText descriptionTxt;
     private Button submitBttn;
+    private ImageView imgColorCaption;
 
     //------- Variables
     private static EntryHandler entryHandler;
@@ -38,6 +40,7 @@ public class NewEntryFragment extends Fragment {
     private String imageFilePath = "";
     private boolean canCopyImages = false;
     private DatabaseHandler database;
+    private CaptionColor captionColor = CaptionColor.WHITE;
 
     //------- Constants
     public static final String TAG = "New Entry Fragment";
@@ -82,6 +85,23 @@ public class NewEntryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 submitEntry();
+            }
+        });
+
+        imgColorCaption = (ImageView) view.findViewById(R.id.img_caption_color);
+        imgColorCaption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toggle between white and black font for the caption color
+                if(captionColor.equals(CaptionColor.WHITE)){
+                    // switch to black font
+                    captionColor = CaptionColor.BLACK;
+                    imgColorCaption.setImageResource(R.drawable.black_text_option);
+                }
+                else{
+                    captionColor = CaptionColor.WHITE;
+                    imgColorCaption.setImageResource(R.drawable.white_text_option);
+                }
             }
         });
 
@@ -186,7 +206,7 @@ public class NewEntryFragment extends Fragment {
         String description = descriptionTxt.getText().toString();
         imageFilePath = imageHandler.getFilepath();
         Entry entry = new Entry(imageFilePath, title, caption, description);
-        entry.getImageFilePath();
+        entry.setCaptionColor(captionColor);
 
         // add new entry to database
         entryHandler.addEntry(entry);

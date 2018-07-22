@@ -62,11 +62,22 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/colored_layout"
                 android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
+                android:layout_toLeftOf="@+id/img_caption_color"
                 android:hint="Caption"
                 android:singleLine="true"
                 android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/img_caption_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/colored_layout"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp"
+                android:background="#c9c9c9"
+                app:srcCompat="@drawable/white_text_option" />
 
             <EditText
                 android:id="@+id/txt_entry_description"

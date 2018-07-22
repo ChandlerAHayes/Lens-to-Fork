@@ -3,6 +3,7 @@ package picture.diary.lenstofork.Diary;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,6 +131,14 @@ public class DiaryFragment extends Fragment {
         // insert title and caption
         titles[index].setText(entry.getTitle());
         captions[index].setText(entry.getCaption());
+        if(entry.getCaptionColor().equals("white")){
+            captions[index].setTextColor(ContextCompat.getColor(getContext(),
+                    android.R.color.white));
+        }
+        else{
+            captions[index].setTextColor(ContextCompat.getColor(getContext(),
+                    android.R.color.black));
+        }
 
         // check if the image stored in currentEntry exists
         String filepath = entry.getImageFilePath();

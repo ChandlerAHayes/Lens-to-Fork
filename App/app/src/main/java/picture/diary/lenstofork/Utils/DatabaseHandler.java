@@ -27,6 +27,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_TITLE = "title";
     public static final String KEY_CAPTION = "caption";
     public static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_CAPTION_COLOR = "caption_color";
 
     //------- EntryHandler Table
     public static final String TABLE_ENTRY_HANDLER = "entry_handler";
@@ -57,6 +58,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_IMG + " TEXT, " +
                 KEY_TITLE + " TEXT, " +
                 KEY_CAPTION + " TEXT, " +
+                KEY_CAPTION_COLOR + " TEXT, " +
                 KEY_DESCRIPTION + " TEXT)";
 
         String createHandler =  "CREATE TABLE " + TABLE_ENTRY_HANDLER + "(" +
@@ -86,7 +88,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    //------- Adding Data to the Database
+    //------- EntryHandler Methods
     /**
      * With a given handler takes all of the entries and inserts the entries and the handler
      * into the database into its corresponding tables
@@ -120,27 +122,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         handler.updateEntries(entryIDs);
     }
 
-    /**
-     * Add the given entry to the database
-     *
-     * @param entry the entry to add
-     * @param db the database connection
-     * @return returns the id (Long) of the newly added entry
-     */
-    private Long addEntry(Entry entry, SQLiteDatabase db){
-        // make a new row in the Entries table
-        ContentValues values = new ContentValues();
-        values.put(KEY_IMG, entry.getImageFilePath());
-        values.put(KEY_TITLE, entry.getTitle());
-        values.put(KEY_CAPTION, entry.getCaption());
-        values.put(KEY_DESCRIPTION, entry.getDescription());
-
-        //insert row and save the id in the entryIDs variables
-        long id = db.insert(TABLE_ENTRY, null, values);
-        return id;
-    }
-
-    //------- Getting Data from the Database
     /**
      * Retrieves the EntryHandler from the database that has the same date as the date (string
      * version) given
@@ -176,42 +157,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             cursor.close();
             return handler;
-        }
-        else{
-            cursor.close();
-            return null;
-        }
-
-    }
-
-    /**
-     * Retrieves the entry that matches the given ID using the given database. This method is used
-     * to populate an EntryHandler object with entries.
-     *
-     * @param id the id of the entry to retrieve
-     * @return an Entry object
-     */
-    public Entry getEntry(long id){
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_ENTRY, new String[]{
-                KEY_ID, KEY_IMG, KEY_TITLE, KEY_CAPTION, KEY_DESCRIPTION}, KEY_ID + "=?",
-                new String[] { String.valueOf(id) },
-                null, null, null, null);
-
-        if(cursor.moveToFirst()){
-            int imageIndex = cursor.getColumnIndex(KEY_IMG);
-            int titleIndex = cursor.getColumnIndex(KEY_TITLE);
-            int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
-            int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
-
-            String img = cursor.getString(imageIndex);
-            String title = cursor.getString(titleIndex);
-            String note = cursor.getString(captionIndex);
-            String description = cursor.getString(descriptionIndex);
-
-            cursor.close();
-            return new Entry(id, img, title, note, description);
         }
         else{
             cursor.close();
@@ -257,41 +202,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Returns all of the entries from the Entry table
-     *
-     * @return
-     */
-    public List<Entry> getAllEntries(){
-        List<Entry> list = new ArrayList<Entry>();
-
-        String query = "SELECT * FROM " + TABLE_ENTRY;
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-
-        if(cursor.moveToFirst()){
-            do{
-                int idIndex = cursor.getColumnIndex(KEY_ID);
-                int imageIndex = cursor.getColumnIndex(KEY_IMG);
-                int titleIndex = cursor.getColumnIndex(KEY_TITLE);
-                int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
-                int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
-
-                Long id = cursor.getLong(idIndex);
-                String img = cursor.getString(imageIndex);
-                String title = cursor.getString(titleIndex);
-                String caption = cursor.getString(captionIndex);
-                String description = cursor.getString(descriptionIndex);
-
-                Entry entry = new Entry(id, img, title, caption, description);
-                list.add(entry);
-            } while(cursor.moveToNext());
-        }
-        cursor.close();
-        return list;
-    }
-
-    //-------- Delete Entries
-    /**
      * Deletes the row from the EntryHandler table that matches the given handler
      *
      * @param handler the EntryHandler to be deleted
@@ -313,19 +223,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.delete(TABLE_ENTRY_HANDLER, KEY_DATE + "=?", new String[]
                 {date});
     }
-
-    /**
-     * Deletes the row for the given entry from the Entry table
-     *
-     * @param entry the entry to be deleted from the database
-     * @param db the open connection to the database
-     */
-    private void deleteEntry(Entry entry, SQLiteDatabase db){
-        db.delete(TABLE_ENTRY, KEY_ID + "=?", new String[]{
-                String.valueOf(entry.getId())});
-    }
-
-    //------- Update Entries
 
     /**
      *
@@ -356,6 +253,134 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
+     * Tells if an EntryHandler that has the given dateStr exists within the database
+     *
+     * @param dateStr the string version of the date that matches the wanted EntryHandler
+     * @return returns true if the EntryHandler exists, false otherwise
+     */
+    public boolean doesEntryHandlerExist(String dateStr){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY0, KEY_ENTRY1,
+                        KEY_ENTRY2, KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5}, KEY_DATE + "=?",
+                new String[]{dateStr}, null, null, null, null);
+        boolean doesExists = cursor.getCount() > 0;
+        cursor.close();
+        return doesExists;
+    }
+
+    //------- Entry Methods
+
+    /**
+     * Add the given entry to the database
+     *
+     * @param entry the entry to add
+     * @param db the database connection
+     * @return returns the id (Long) of the newly added entry
+     */
+    private Long addEntry(Entry entry, SQLiteDatabase db){
+        // make a new row in the Entries table
+        ContentValues values = new ContentValues();
+        values.put(KEY_IMG, entry.getImageFilePath());
+        values.put(KEY_TITLE, entry.getTitle());
+        values.put(KEY_CAPTION, entry.getCaption());
+        values.put(KEY_CAPTION_COLOR, entry.getCaptionColor().getColorValue());
+        values.put(KEY_DESCRIPTION, entry.getDescription());
+
+        //insert row and save the id in the entryIDs variables
+        long id = db.insert(TABLE_ENTRY, null, values);
+        return id;
+    }
+
+    /**
+     * Retrieves the entry that matches the given ID using the given database. This method is used
+     * to populate an EntryHandler object with entries.
+     *
+     * @param id the id of the entry to retrieve
+     * @return an Entry object
+     */
+    public Entry getEntry(long id){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(TABLE_ENTRY, new String[]{
+                KEY_ID, KEY_IMG, KEY_TITLE, KEY_CAPTION, KEY_DESCRIPTION}, KEY_ID + "=?",
+                new String[] { String.valueOf(id) },
+                null, null, null, null);
+
+        if(cursor.moveToFirst()){
+            int imageIndex = cursor.getColumnIndex(KEY_IMG);
+            int titleIndex = cursor.getColumnIndex(KEY_TITLE);
+            int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
+            int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
+            int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
+            String colorString = cursor.getString(colorIndex);
+
+            String img = cursor.getString(imageIndex);
+            String title = cursor.getString(titleIndex);
+            String note = cursor.getString(captionIndex);
+            String description = cursor.getString(descriptionIndex);
+
+            cursor.close();
+            Entry entry = new Entry(id, img, title, note, description);
+            entry.setCaptionColor(colorString);
+            return entry;
+        }
+        else{
+            cursor.close();
+            return null;
+        }
+
+    }
+
+    /**
+     * Returns all of the entries from the Entry table
+     *
+     * @return
+     */
+    public List<Entry> getAllEntries(){
+        List<Entry> list = new ArrayList<Entry>();
+
+        String query = "SELECT * FROM " + TABLE_ENTRY;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                int idIndex = cursor.getColumnIndex(KEY_ID);
+                int imageIndex = cursor.getColumnIndex(KEY_IMG);
+                int titleIndex = cursor.getColumnIndex(KEY_TITLE);
+                int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
+                int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
+                int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
+
+                Long id = cursor.getLong(idIndex);
+                String img = cursor.getString(imageIndex);
+                String title = cursor.getString(titleIndex);
+                String caption = cursor.getString(captionIndex);
+                String description = cursor.getString(descriptionIndex);
+                String colorCaption = cursor.getString(colorIndex);
+
+                Entry entry = new Entry(id, img, title, caption, description);
+                entry.setCaptionColor(colorCaption);
+                list.add(entry);
+            } while(cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
+    }
+
+    /**
+     * Deletes the row for the given entry from the Entry table
+     *
+     * @param entry the entry to be deleted from the database
+     * @param db the open connection to the database
+     */
+    private void deleteEntry(Entry entry, SQLiteDatabase db){
+        db.delete(TABLE_ENTRY, KEY_ID + "=?", new String[]{
+                String.valueOf(entry.getId())});
+    }
+
+    /**
      * Updates the values for an Entry row item using the given entry.
      *
      * @param entry the entry
@@ -375,20 +400,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(entry.getId())});
     }
 
-    //-------- Miscellaneous Methods
-    public boolean doesEntryHandlerExist(String dateStr){
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY0, KEY_ENTRY1,
-                        KEY_ENTRY2, KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5}, KEY_DATE + "=?",
-                new String[]{dateStr}, null, null, null, null);
-        boolean doesExists = cursor.getCount() > 0;
-        cursor.close();
-        return doesExists;
-    }
-
     //-------- Dimensions Methods
 
+    /**
+     * Adds the given dimensions to the database
+     *
+     * @param tag the Tag that matches the activity/fragment that the dimensions belong to
+     * @param width the width of the activity/fragment
+     * @param height the height of the activity/fragment
+     */
     public void addDimensions(String tag, int width, int height){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -435,12 +455,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Deletes the dimensions that has the matching tag from the database
+     *
+     * @param tag the tag of the activity/fragment dimensions to delete
+     */
     public void deleteDimensions(String tag){
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.delete(TABLE_DIMENSIONS, KEY_TAG + "=?", new String[]{tag});
     }
 
+    /**
+     * Updates the dimensions with the given tag to the values given.
+     *
+     * @param tag the activity/fragment that has the same tag
+     * @param width the new width
+     * @param height the new height
+     * @return the number of rows affected
+     */
     public int updateDimensions(String tag, int width, int height){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -452,6 +485,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return db.update(TABLE_DIMENSIONS, values, KEY_TAG + "=?", new String[]{tag});
     }
 
+    /**
+     * Tells if dimensions that match the given tag exists.
+     *
+     * @param tag the tag that belongs to a specific activity/fragment
+     * @return true if the dimensions exists, false otherwise
+     */
     public boolean doesDimensionsExists(String tag){
         SQLiteDatabase db = this.getReadableDatabase();
 

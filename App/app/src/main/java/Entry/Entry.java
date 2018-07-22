@@ -20,6 +20,7 @@ public class Entry {
         this.title = title;
         this.caption = caption;
         this.description = description;
+        captionColor = CaptionColor.WHITE;
     }
 
     public Entry(Long id, String filepath, String title, String caption, String description){
@@ -28,6 +29,7 @@ public class Entry {
         this.title = title;
         this.caption = caption;
         this.description = description;
+        captionColor = CaptionColor.WHITE;
     }
 
     //-------- Setter & Getters
