@@ -25,21 +25,22 @@
 
                 <TextView
                     android:id="@+id/txt_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Breakfast"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                     android:textColor="@android:color/white" />
 
                 <EditText
                     android:id="@+id/edit_txt_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="Title"
                     android:inputType="textPersonName"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                     android:textColor="@android:color/white"
+                    android:textColorHint="@color/dividerColor"
                     android:visibility="gone" />
 
             </RelativeLayout>
@@ -94,7 +95,7 @@
 
                 <TextView
                     android:id="@+id/txt_caption"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/header_caption"
                     android:text="Some caption...."
@@ -102,7 +103,7 @@
 
                 <EditText
                     android:id="@+id/edit_txt_caption"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/header_caption"
                     android:ems="10"
@@ -131,19 +132,26 @@
 
                 <TextView
                     android:id="@+id/txt_description"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/header_description"
-                    android:text="Some description.........." />
+                    android:text="Some description.........."
+                    android:textSize="18sp" />
 
                 <EditText
                     android:id="@+id/edit_txt_description"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/header_description"
+                    android:background="@drawable/text_view_border"
                     android:ems="10"
                     android:hint="Decsription"
                     android:inputType="textPersonName"
+                    android:minLines="5"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="1dp"
+                    android:paddingTop="1dp"
                     android:visibility="gone" />
 
             </RelativeLayout>

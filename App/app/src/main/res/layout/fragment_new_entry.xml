@@ -8,49 +8,61 @@
     <RelativeLayout
 
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="15dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingTop="15dp">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/txt_entry_title"
+
+            <RelativeLayout
+                android:id="@+id/colored_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:hint="Title"
-                android:singleLine="true"
-                android:textSize="18sp" />
+                android:background="@android:color/darker_gray"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="15dp">
 
-            <ImageView
-                android:id="@+id/img_entry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txt_entry_title"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
-                app:srcCompat="@drawable/camera_teal" />
+                <EditText
+                    android:id="@+id/txt_entry_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Title"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColorHint="@color/dividerColor" />
 
-            <TextView
-                android:id="@+id/txt_image_prompt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/img_entry"
-                android:layout_below="@+id/img_entry"
-                android:text="Choose an image" />
+                <ImageView
+                    android:id="@+id/img_entry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_entry_title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    app:srcCompat="@drawable/camera_teal" />
+
+                <TextView
+                    android:id="@+id/txt_image_prompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/img_entry"
+                    android:layout_below="@+id/img_entry"
+                    android:layout_marginTop="5dp"
+                    android:text="Choose an image"
+                    android:textColor="@android:color/white" />
+
+            </RelativeLayout>
 
             <EditText
                 android:id="@+id/txt_entry_caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/img_entry"
+                android:layout_below="@+id/colored_layout"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:hint="Caption"
                 android:singleLine="true"
@@ -61,10 +73,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txt_entry_caption"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
+                android:background="@drawable/text_view_border"
                 android:ems="10"
+                android:gravity="top"
                 android:hint="Description"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:lines="5"
+                android:minHeight="100dp"
+                android:paddingBottom="1dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="1dp"
+                android:paddingTop="1dp" />
         </RelativeLayout>
 
         <Button
@@ -74,6 +96,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/layout"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
             android:layout_marginTop="30dp"
             android:text="Submit" />
     </RelativeLayout>
