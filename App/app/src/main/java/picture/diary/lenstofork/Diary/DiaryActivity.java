@@ -150,12 +150,13 @@ public class DiaryActivity extends AppCompatActivity {
      * Handles the extras that the Activity were initalized with
      */
     private void handleExtras(){
-        if(getIntent().getExtras() == null){
+        dateString = getIntent().getStringExtra(EXTRA_CURRENT_DATE);
+        if(dateString
+                == null){
             currentDate = Calendar.getInstance();
             dateString = simpleDateFormat.format(currentDate.getTime());
         }
         else{
-            dateString = getIntent().getStringExtra(EXTRA_CURRENT_DATE);
             String[] dateSplit = dateString.split("-");
             int year = Integer.valueOf(dateSplit[2]);
             int month = Integer.valueOf(dateSplit[0])-1; // january is 0, must subtract by 1
