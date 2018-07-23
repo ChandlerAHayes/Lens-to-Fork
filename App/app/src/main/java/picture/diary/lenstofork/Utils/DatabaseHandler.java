@@ -261,9 +261,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public boolean doesEntryHandlerExist(String dateStr){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE, KEY_ENTRY0, KEY_ENTRY1,
-                        KEY_ENTRY2, KEY_ENTRY3, KEY_ENTRY4, KEY_ENTRY5}, KEY_DATE + "=?",
-                new String[]{dateStr}, null, null, null, null);
+        Cursor cursor = db.query(TABLE_ENTRY_HANDLER, new String[]{KEY_DATE},
+                KEY_DATE + "=?", new String[]{dateStr}, null, null,
+                null, null);
         boolean doesExists = cursor.getCount() > 0;
         cursor.close();
         return doesExists;
@@ -302,8 +302,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Entry getEntry(long id){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor cursor = db.query(TABLE_ENTRY, new String[]{
-                KEY_ID, KEY_IMG, KEY_TITLE, KEY_CAPTION, KEY_DESCRIPTION}, KEY_ID + "=?",
+        Cursor cursor = db.query(TABLE_ENTRY, new String[]{KEY_ID, KEY_IMG, KEY_TITLE, KEY_CAPTION,
+                        KEY_DESCRIPTION, KEY_CAPTION_COLOR}, KEY_ID + "=?",
                 new String[] { String.valueOf(id) },
                 null, null, null, null);
 
@@ -313,12 +313,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
             int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
             int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
-            String colorString = cursor.getString(colorIndex);
 
             String img = cursor.getString(imageIndex);
             String title = cursor.getString(titleIndex);
             String note = cursor.getString(captionIndex);
             String description = cursor.getString(descriptionIndex);
+            String colorString = cursor.getString(colorIndex);
 
             cursor.close();
             Entry entry = new Entry(id, img, title, note, description);

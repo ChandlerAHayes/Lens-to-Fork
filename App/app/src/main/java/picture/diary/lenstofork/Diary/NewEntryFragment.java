@@ -210,7 +210,6 @@ public class NewEntryFragment extends Fragment {
 
         // add new entry to database
         entryHandler.addEntry(entry);
-        DatabaseHandler database = new DatabaseHandler(getContext());
         if(entryHandler.getNumberOfEntries() == 1){
             database.addEntries(entryHandler);
         }

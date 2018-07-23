@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
+import Entry.CaptionColor;
 import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
@@ -131,7 +132,7 @@ public class DiaryFragment extends Fragment {
         // insert title and caption
         titles[index].setText(entry.getTitle());
         captions[index].setText(entry.getCaption());
-        if(entry.getCaptionColor().equals("white")){
+        if(entry.getCaptionColor().equals(CaptionColor.WHITE)){
             captions[index].setTextColor(ContextCompat.getColor(getContext(),
                     android.R.color.white));
         }
