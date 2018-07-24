@@ -9,168 +9,80 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:id="@+id/layout"
+        <TextView
+            android:id="@+id/txt_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@android:color/darker_gray"
+            android:paddingLeft="15dp"
+            android:paddingTop="15dp"
+            android:text="Breakfast"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@android:color/white" />
 
-            <RelativeLayout
-                android:id="@+id/title_layout"
-                android:layout_width="match_parent"
+        <RelativeLayout
+            android:id="@+id/image_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_title"
+            android:background="@android:color/darker_gray"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+
+            <ImageView
+                android:id="@+id/img"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/darker_gray"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp">
-
-                <TextView
-                    android:id="@+id/txt_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Breakfast"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:textColor="@android:color/white" />
-
-                <EditText
-                    android:id="@+id/edit_txt_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Title"
-                    android:inputType="textPersonName"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@color/dividerColor"
-                    android:visibility="gone" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/image_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title_layout"
-                android:background="@android:color/darker_gray"
-                android:paddingBottom="10dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp">
-
-                <ImageView
-                    android:id="@+id/img"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"
-                    android:adjustViewBounds="true"
-                    app:srcCompat="@drawable/camera_teal" />
-
-                <TextView
-                    android:id="@+id/header_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignRight="@+id/img"
-                    android:layout_below="@+id/img"
-                    android:layout_marginTop="5dp"
-                    android:text="Tap on the photo to change it"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@color/dividerColor"
-                    android:visibility="gone" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/caption_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/image_layout"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp">
-
-                <TextView
-                    android:id="@+id/header_caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Caption"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
-
-                <TextView
-                    android:id="@+id/txt_caption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/header_caption"
-                    android:text="Some caption...."
-                    android:textSize="18sp" />
-
-                <EditText
-                    android:id="@+id/edit_txt_caption"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/header_caption"
-                    android:ems="10"
-                    android:hint="Caption"
-                    android:singleLine="true"
-                    android:textSize="18sp"
-                    android:visibility="gone" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/description_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/caption_layout"
-                android:layout_marginTop="15dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp">
-
-                <TextView
-                    android:id="@+id/header_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Description"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
-
-                <TextView
-                    android:id="@+id/txt_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/header_description"
-                    android:text="Some description.........."
-                    android:textSize="18sp" />
-
-                <EditText
-                    android:id="@+id/edit_txt_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/header_description"
-                    android:background="@drawable/text_view_border"
-                    android:ems="10"
-                    android:hint="Decsription"
-                    android:inputType="textPersonName"
-                    android:minLines="5"
-                    android:paddingBottom="1dp"
-                    android:paddingLeft="3dp"
-                    android:paddingRight="1dp"
-                    android:paddingTop="1dp"
-                    android:visibility="gone" />
-
-            </RelativeLayout>
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/camera_teal" />
 
         </RelativeLayout>
 
-
-        <Button
-            android:id="@+id/bttn_submit"
-            style="@style/ColoredButton"
+        <TextView
+            android:id="@+id/header_caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/layout"
-            android:layout_marginBottom="15dp"
+            android:layout_below="@+id/image_layout"
+            android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:text="Submit"
-            android:visibility="gone" />
+            android:layout_marginTop="15dp"
+            android:text="Caption"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+        <TextView
+            android:id="@+id/txt_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header_caption"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="Some caption...."
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/header_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_caption"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:text="Description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+        <TextView
+            android:id="@+id/txt_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header_description"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="Some description.........."
+            android:textSize="18sp" />
+
 
     </RelativeLayout>
 
