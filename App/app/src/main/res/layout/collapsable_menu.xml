@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
-        app:srcCompat="@drawable/arrow_down" />
+        app:srcCompat="@drawable/arrow_down_black" />
 
     <View
         android:layout_width="match_parent"
