@@ -146,7 +146,7 @@ public class DiaryFragment extends Fragment {
         if(!new File(filepath).exists()){
             //TODO: make a default image
             // image does not exist, so use default
-            images[index].setImageResource(R.drawable.ic_launcher_foreground);
+            images[index].setImageResource(R.drawable.foreground);
         }
         else{
             // resize and insert image into ImageView

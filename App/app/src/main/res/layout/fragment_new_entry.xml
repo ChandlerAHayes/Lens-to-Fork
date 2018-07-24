@@ -77,7 +77,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:background="#c9c9c9"
-                app:srcCompat="@drawable/white_text_option" />
+                app:srcCompat="@drawable/colored_caption_white" />
 
             <EditText
                 android:id="@+id/txt_entry_description"

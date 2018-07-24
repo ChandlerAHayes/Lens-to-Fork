@@ -96,11 +96,11 @@ public class NewEntryFragment extends Fragment {
                 if(captionColor.equals(CaptionColor.WHITE)){
                     // switch to black font
                     captionColor = CaptionColor.BLACK;
-                    imgColorCaption.setImageResource(R.drawable.black_text_option);
+                    imgColorCaption.setImageResource(R.drawable.colored_caption_black);
                 }
                 else{
                     captionColor = CaptionColor.WHITE;
-                    imgColorCaption.setImageResource(R.drawable.white_text_option);
+                    imgColorCaption.setImageResource(R.drawable.colored_caption_white);
                 }
             }
         });

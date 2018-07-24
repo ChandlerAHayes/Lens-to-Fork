@@ -151,8 +151,7 @@ public class DiaryActivity extends AppCompatActivity {
      */
     private void handleExtras(){
         dateString = getIntent().getStringExtra(EXTRA_CURRENT_DATE);
-        if(dateString
-                == null){
+        if(dateString == null){
             currentDate = Calendar.getInstance();
             dateString = simpleDateFormat.format(currentDate.getTime());
         }

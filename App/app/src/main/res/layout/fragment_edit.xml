@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/main_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/colored_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray"
+                android:paddingBottom="10dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp">
+
+                <EditText
+                    android:id="@+id/txt_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Title"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@color/dividerColor" />
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    app:srcCompat="@drawable/camera_teal" />
+
+                <TextView
+                    android:id="@+id/header_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@+id/image"
+                    android:layout_below="@+id/image"
+                    android:layout_marginTop="5dp"
+                    android:text="Tap on photo to change it"
+                    android:textColor="@android:color/white" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/colored_layout"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:id="@+id/header_caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/black_line"
+                    android:paddingBottom="10dp"
+                    android:text="Caption"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                <ImageView
+                    android:id="@+id/drop_caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/header_caption"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/header_caption"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="15dp"
+                    app:srcCompat="@drawable/arrow_down" />
+
+                <ImageView
+                    android:id="@+id/img_caption_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/header_caption"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/colored_caption_background"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/colored_caption_white" />
+
+                <EditText
+                    android:id="@+id/txt_caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/header_caption"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_toLeftOf="@+id/img_caption_color"
+                    android:ems="10"
+                    android:hint="Caption"
+                    android:inputType="text"
+                    android:singleLine="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/layout_caption"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="15dp">
+
+                <TextView
+                    android:id="@+id/header_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/black_line"
+                    android:paddingBottom="10dp"
+                    android:text="Description"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+
+                <ImageView
+                    android:id="@+id/drop_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/header_description"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/header_description"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="15dp"
+                    app:srcCompat="@drawable/arrow_down" />
+
+                <EditText
+                    android:id="@+id/txt_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:layout_below="@+id/header_description"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/text_view_border"
+                    android:ems="10"
+                    android:gravity="top"
+                    android:inputType="text"
+                    android:paddingLeft="15dp"
+                    android:paddingTop="15dp"
+                    android:singleLine="true"
+                    android:text="Description"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/bttn_submit"
+                style="@style/ColoredButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/layout_description"
+                android:layout_marginBottom="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="20dp"
+                android:text="Save Changes" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</ScrollView>
