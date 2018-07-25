@@ -28,8 +28,8 @@ public class DiaryFragment extends Fragment {
 
     // variables
     private static EntryHandler entryHandler;
-    DatabaseHandler database;
-
+    private DatabaseHandler database;
+    private boolean needsUpdating = false;
 
     // constants
     public static final String TAG = "DIARY_FRAGMENT";
@@ -54,7 +54,8 @@ public class DiaryFragment extends Fragment {
                public void run() {
                     int[] dimensions = database.getDimensions(TAG);
                     // if width or height are different update values
-                    if(dimensions[0] != view.getWidth() || dimensions[1] != view.getHeight()){
+                    if((dimensions[0] != view.getWidth() || dimensions[1] != view.getHeight())
+                            && (view.getWidth() > 0 && view.getHeight() > 0)){
                         database.updateDimensions(TAG, view.getWidth(), view.getHeight());
                     }
                }
@@ -64,8 +65,10 @@ public class DiaryFragment extends Fragment {
             view.post(new Runnable() {
                 @Override
                 public void run() {
-                    // values need to be added to the database
-                    database.addDimensions(TAG, view.getWidth(), view.getHeight());
+                    if(view.getWidth() > 0 && view.getHeight() > 0){
+                        // values need to be added to the database
+                        database.addDimensions(TAG, view.getWidth(), view.getHeight());
+                    }
                 }
             });
         }
@@ -162,6 +165,7 @@ public class DiaryFragment extends Fragment {
         containers[index].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                needsUpdating = true;
                 Intent intent = EntryActivity.newInstance(DetailFragment.TAG,
                         entryHandler.getStringDate(),index, getActivity());
                 startActivity(intent);
@@ -177,6 +181,8 @@ public class DiaryFragment extends Fragment {
     private void setUpAddEntryContainer(final int index){
         // set default picture for adding a new pic
         images[index].setImageResource(R.drawable.add_entry_teal);
+        titles[index].setText("");
+        captions[index].setText("");
 
         // go to NewEntryFragment, to create a new Entry
         containers[index].setOnClickListener(new View.OnClickListener() {
@@ -208,6 +214,34 @@ public class DiaryFragment extends Fragment {
         }
     }
 
+    private void updateUI(){
+        needsUpdating = false; // reset this value
+        //update entryHandler
+        entryHandler = database.getEntryHandler(entryHandler.getStringDate());
+        boolean entriesAreLogged = true;
+        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+            // set values for entries
+            Entry currentEntry = entryHandler.getEntry(i);
+            if(currentEntry != null){
+                fillInEntryData(currentEntry, i);
+            }
+            else{
+                if(entriesAreLogged){
+                    /**
+                     * Current index is the first entry that is null. Therefore, make this index
+                     * display the add new entry image. Set this container
+                     */
+                    entriesAreLogged = false;
+
+                    setUpAddEntryContainer(i);
+                }
+                else{
+                    containers[i].setVisibility(View.GONE);
+                }
+            }
+        }
+    }
+
     //------- Fragment Methods
     public static DiaryFragment newInstance(String entryHandlerDate){
         DiaryFragment fragment = new DiaryFragment();
@@ -217,5 +251,13 @@ public class DiaryFragment extends Fragment {
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    @Override
+    public void onResume() {
+        if(needsUpdating){
+            updateUI();
+        }
+        super.onResume();
     }
 }

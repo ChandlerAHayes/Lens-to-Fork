@@ -2,9 +2,11 @@ package picture.diary.lenstofork.Diary;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,7 +22,6 @@ import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Utils.FragmentController;
 import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class DetailFragment extends Fragment {
@@ -67,9 +68,15 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState)
     {
         super.onCreateView(inflater, container, savedInstanceState);
+
+        //-------- Toolbar Setup
         setHasOptionsMenu(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
+                .setHomeAsUpIndicator(R.drawable.up_navigation_white);
 
         final View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
 
         //------- Set Up Widgets
         titleTxt = (TextView) view.findViewById(R.id.txt_title);
@@ -95,8 +102,9 @@ public class DetailFragment extends Fragment {
                 @Override
                 public void run() {
                     int[] dimensions = database.getDimensions(TAG);
-                    // if width or height are different update values
-                    if(dimensions[0] != view.getWidth() || dimensions[1] != view.getHeight()){
+                    // if width or height are different update values & view has positive dimensions
+                    if((dimensions[0] != view.getWidth() || dimensions[1] != view.getHeight())
+                            && (view.getWidth() > 0 && view.getHeight() > 0)){
                         database.updateDimensions(TAG, view.getWidth(), view.getHeight());
                     }
                 }
@@ -106,14 +114,17 @@ public class DetailFragment extends Fragment {
             view.post(new Runnable() {
                 @Override
                 public void run() {
-                    Double widthDouble = view.getWidth() * 0.98;
-                    Double heightDouble = view.getHeight() * 0.48;
-                    int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-                    imageHandler.loadIntoImageView(minDimension, minDimension,
-                            entry.getImageFilePath(), image);
+                    if(view.getWidth() > 0 && view.getHeight() > 0){
+                        Double widthDouble = view.getWidth() * 0.98;
+                        Double heightDouble = view.getHeight() * 0.48;
+                        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+                        imageHandler.loadIntoImageView(minDimension, minDimension,
+                                entry.getImageFilePath(), image);
 
-                    // values need to be added to the database
-                    database.addDimensions(TAG, view.getWidth(), view.getHeight());
+                        // values need to be added to the database
+
+                        database.addDimensions(TAG, view.getWidth(), view.getHeight());
+                    }
                 }
             });
         }
@@ -170,9 +181,11 @@ public class DetailFragment extends Fragment {
         entryHandler.removeEntry(position);
         // update database
         database.updateEntryHandler(entryHandler);
+
         // return to DiaryActivity
-        Intent intent = DiaryActivity.newInstance(getActivity(), entryHandler.getStringDate());
-        startActivity(intent);
+//        Intent intent = DiaryActivity.newInstance(getActivity(), entryHandler.getStringDate());
+//        startActivity(intent);
+        getActivity().onBackPressed();
     }
 
     /**
@@ -225,18 +238,28 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
         switch (item.getItemId()){
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+
             case R.id.edit:
-                FragmentController controller = new FragmentController(getActivity()
-                        .getSupportFragmentManager());
-                controller.openFragment(EditFragment.newInstance(entryHandler.getStringDate(),
-                        position), EditFragment.TAG);
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                EditFragment fragment = EditFragment.newInstance(entryHandler.getStringDate(),
+                        position);
+                transaction.replace(R.id.main_content, fragment, EditFragment.TAG);
+                transaction.addToBackStack(EditFragment.TAG);
+                transaction.commit();
+
                 return true;
 
             case R.id.delete:
                 confirmDelete();
                 return true;
-        }
 
-        return true;
+            default:
+                return true;
+        }
     }
+
 }

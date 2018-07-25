@@ -196,6 +196,8 @@ public class DiaryActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+
 }
 
 /*

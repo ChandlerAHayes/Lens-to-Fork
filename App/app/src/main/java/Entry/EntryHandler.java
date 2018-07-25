@@ -156,4 +156,34 @@ public class EntryHandler implements Serializable {
     public Entry getEntry(int position){
         return entries[position];
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj){
+            return true;
+        }
+        if(obj == null){
+            return false;
+        }
+        if(getClass() != obj.getClass()){
+            return false;
+        }
+
+        EntryHandler handler = (EntryHandler) obj;
+        Entry[] objEntries = handler.getEntries();
+        for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
+            if(entries[i] == null && objEntries == null){
+                continue;
+            }
+            else if(entries[i] == null && objEntries != null){
+                return false;
+            }
+
+            if(!entries[i].equals(objEntries[i])){
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

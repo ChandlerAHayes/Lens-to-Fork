@@ -104,10 +104,31 @@ public class Entry {
 
         //------ Compare attributes
         Entry entry = (Entry) obj;
-        return ( filepath.equals(((Entry) obj).getImageFilePath()) && title.equals(((Entry) obj)
-                .getTitle()) && caption.equals(((Entry) obj).getCaption()) &&
-                description.equals(((Entry) obj).getDescription()) )
-                || id.equals(((Entry) obj).getId());
+        // filepath must be equal
+        if(!filepath.equals(entry.getImageFilePath())){
+            return false;
+        }
+        // title must be equal
+        if(!title.equals(entry.getTitle())){
+            return false;
+        }
+        // caption must be equal
+        if(!caption.equals(entry.getCaption())){
+            return false;
+        }
+        // captionColor must be equal
+        if(!captionColor.equals(entry.getCaptionColor())){
+            return false;
+        }
+        // description must be equal
+        if(!description.equals(entry.getDescription())){
+            return false;
+        }
+        // ID's must be equal
+        if(!id.equals(entry.getId())){
+            return false;
+        }
+        return true;
     }
 
     public void setCaptionColor(CaptionColor color){

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -94,5 +95,17 @@ public class EntryActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_ENTRY_POSITION, entryPosition);
 
         return intent;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // finish activity if on the DetailFragment (backStack will have a count of 1)
+        FragmentManager manager = getSupportFragmentManager();
+        if(manager.getBackStackEntryCount() == 1){
+            finish();
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 }

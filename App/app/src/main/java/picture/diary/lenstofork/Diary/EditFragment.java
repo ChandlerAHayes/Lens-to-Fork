@@ -6,7 +6,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,7 +27,6 @@ import Entry.Entry;
 import Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
-import picture.diary.lenstofork.Utils.FragmentController;
 import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class EditFragment extends Fragment{
@@ -85,7 +88,13 @@ public class EditFragment extends Fragment{
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_edit, container, false);
 
-        //-------- Initialize Widgetrs
+        //-------- Toolbar
+        setHasOptionsMenu(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
+                .setHomeAsUpIndicator(R.drawable.up_navigation_white);
+
+        //-------- Initialize Widgets
         // set title
         titleTxt = (EditText) view.findViewById(R.id.txt_title);
 
@@ -251,14 +260,11 @@ public class EditFragment extends Fragment{
 
         if(hasEntryChanged){
             // update entry with entryHandler and database
-            entryHandler.updateEntry(getArguments().getInt(ARG_ENTRY_HANDLER), entry);
+            entryHandler.updateEntry(getArguments().getInt(ARG_ENTRY_INDEX), entry);
             database.updateEntryHandler(entryHandler);
         }
 
-        // go back to detail fragment
-        new FragmentController(getFragmentManager()).openFragment(DetailFragment.newInstance(
-                getArguments().getInt(ARG_ENTRY_INDEX), entryHandler.getStringDate()),
-                DetailFragment.TAG);
+        returnToDetailFragment();
     }
 
     /**
@@ -410,5 +416,30 @@ public class EditFragment extends Fragment{
                 canCopyImages = false;
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                returnToDetailFragment();
+                return true;
+
+            default:
+                return true;
+        }
+    }
+
+    private void returnToDetailFragment(){
+        // add new instance of DetailFragment
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        // remove EditFragment from backStack
+        manager.popBackStackImmediate();
+        FragmentTransaction transaction = manager.beginTransaction();
+        DetailFragment fragment = DetailFragment.newInstance(getArguments()
+                .getInt(ARG_ENTRY_INDEX), entryHandler.getStringDate());
+        transaction.replace(R.id.main_content, fragment, DetailFragment.TAG);
+        transaction.commit();
     }
 }
