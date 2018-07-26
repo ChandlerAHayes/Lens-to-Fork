@@ -18,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.io.File;
 
 import Entry.CaptionColor;
@@ -141,11 +139,7 @@ public class EditFragment extends Fragment{
      */
     private void configureViews(){
         // image
-        int[] dimensions = database.getDimensions(DetailFragment.TAG);
-        Double widthDouble = dimensions[0] * 0.98;
-        Double heightDouble = dimensions[1] * 0.48;
-        int minDimensions = Math.min(widthDouble.intValue(), heightDouble.intValue());
-        imageHandler.loadIntoImageView(minDimensions, minDimensions, filepath, image);
+        loadImage();
 
         image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -314,6 +308,23 @@ public class EditFragment extends Fragment{
         dialog.show();
     }
 
+    /**
+     * Determines the dimensions of the image and loads it into the image view
+     */
+    private void loadImage(){
+        int[] dimensions = database.getDimensions(DetailFragment.TAG);
+        Double widthDouble = dimensions[0] * 0.98;
+        Double heightDouble = dimensions[1] * 0.48;
+        int minDimensions = Math.min(widthDouble.intValue(), heightDouble.intValue());
+        if(new File(filepath).exists()){
+            imageHandler.loadIntoImageView(minDimensions, minDimensions, filepath, image);
+        }
+        else{
+            imageHandler.loadIntoImageView(minDimensions, minDimensions, R.drawable.camera_teal,
+                    image);
+        }
+    }
+
     //-------- Caption & Description Menu Methods
 
     /**
@@ -370,34 +381,14 @@ public class EditFragment extends Fragment{
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
             imageHandler.addNewImageToGallery();
             filepath = imageHandler.getFilepath();
-
-            // resize and insert image into ImageView
-            int[] dimensions = database.getDimensions(DetailFragment.TAG);
-            Double widthDouble = dimensions[0] * 0.98;
-            Double heightDouble = dimensions[1] * 0.48;
-            int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-            Picasso.get()
-                .load(new File(entry.getImageFilePath()))
-                .resize(minDimension, minDimension)
-                .centerCrop()
-                .into(image);
+            loadImage();
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
                 filepath = imageHandler.getFilepath();
-
-                // resize and insert image into ImageView
-                int[] dimensions = database.getDimensions(DetailFragment.TAG);
-                Double widthDouble = dimensions[0] * 0.98;
-                Double heightDouble = dimensions[1] * 0.48;
-                int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-                Picasso.get()
-                    .load(new File(filepath))
-                    .resize(minDimension, minDimension)
-                    .centerCrop()
-                    .into(image);
+                loadImage();
             }
 
         }

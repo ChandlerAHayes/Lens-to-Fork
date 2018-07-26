@@ -10,7 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -61,6 +63,12 @@ public class NewEntryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_entry, container, false);
+
+        //-------- Toolbar
+        setHasOptionsMenu(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ((AppCompatActivity) getActivity()).getSupportActionBar()
+                .setHomeAsUpIndicator(R.drawable.up_navigation_white);
 
         // get extras from intents
         Bundle args = getArguments();
@@ -222,6 +230,17 @@ public class NewEntryFragment extends Fragment {
         startActivity(intent);
     }
 
+    /**
+     * Determines the dimensions of the image and loads it into the image view
+     */
+    private void loadImage(String filepath){
+        int[] results = database.getDimensions(DiaryFragment.TAG);
+        Double widthDouble = results[0] * .48;
+        Double heightDouble = results[1] * .31;
+        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+        imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
+    }
+
     //--------- Fragment Methods
 
     @Override
@@ -231,26 +250,15 @@ public class NewEntryFragment extends Fragment {
         if(requestCode == ImageHandler.RESULT_CODE_CAMERA){
             imageHandler.addNewImageToGallery();
             String filepath = imageHandler.getFilepath();
-
-            // resize and insert image into ImageView
-            int[] results = database.getDimensions(DiaryFragment.TAG);
-            Double widthDouble = results[0] * .48;
-            Double heightDouble = results[1] * .31;
-            int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-            imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
+            loadImage(filepath);
         }
         if(requestCode == ImageHandler.RESULT_CODE_GALLERY){
             if(data != null){
                 Uri imgUri = data.getData();
                 imageHandler.handleGalleryResults(imgUri, getContext(), canCopyImages);
                 String filepath = imageHandler.getFilepath();
+                loadImage(filepath);
 
-                // resize and insert image into ImageView
-                int[] results = database.getDimensions(DiaryFragment.TAG);
-                Double widthDouble = results[0] * .48;
-                Double heightDouble = results[1] * .31;
-                int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-                imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
             }
         }
     }
@@ -278,5 +286,18 @@ public class NewEntryFragment extends Fragment {
         fragment.setArguments(args);
 
         return fragment;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                return true;
+
+            default:
+                return true;
+        }
     }
 }

@@ -189,9 +189,18 @@ public class ImageHandler {
     }
 
 
+    //-------- Load Image into ImageView Methods
     public void loadIntoImageView(int width, int height, String filepath, ImageView view){
         Picasso.get()
                 .load(new File(filepath))
+                .resize(width, height)
+                .centerCrop()
+                .into(view);
+    }
+
+    public void loadIntoImageView(int width, int height, int resourceID, ImageView view){
+        Picasso.get()
+                .load(resourceID)
                 .resize(width, height)
                 .centerCrop()
                 .into(view);

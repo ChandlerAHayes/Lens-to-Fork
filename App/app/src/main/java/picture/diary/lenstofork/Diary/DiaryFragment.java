@@ -28,6 +28,7 @@ public class DiaryFragment extends Fragment {
 
     // variables
     private static EntryHandler entryHandler;
+    private ImageHandler imageHandler;
     private DatabaseHandler database;
     private boolean needsUpdating = false;
 
@@ -40,6 +41,7 @@ public class DiaryFragment extends Fragment {
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_diary, container, false);
         database = new DatabaseHandler(getContext());
+        imageHandler = new ImageHandler(getActivity(), TAG);
 
         //------ Get EntryHandler for date given
         handleArguments();
@@ -144,22 +146,9 @@ public class DiaryFragment extends Fragment {
                     android.R.color.black));
         }
 
-        // check if the image stored in currentEntry exists
+        // load image into ImageView
         String filepath = entry.getImageFilePath();
-        if(!new File(filepath).exists()){
-            //TODO: make a default image
-            // image does not exist, so use default
-            images[index].setImageResource(R.drawable.foreground);
-        }
-        else{
-            // resize and insert image into ImageView
-            int[] results = database.getDimensions(TAG);
-            Double widthDouble = results[0] * 0.48;
-            Double heightDouble = results[1] * 0.31;
-            int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-            new ImageHandler(getActivity(), TAG).loadIntoImageView(minDimension, minDimension,
-                    filepath, images[index]);
-        }
+        loadImage(filepath, images[index]);
 
         // add onClickListener to view Entry Details or Edit
         containers[index].setOnClickListener(new View.OnClickListener() {
@@ -180,7 +169,12 @@ public class DiaryFragment extends Fragment {
      */
     private void setUpAddEntryContainer(final int index){
         // set default picture for adding a new pic
-        images[index].setImageResource(R.drawable.add_entry_teal);
+        int[] results = database.getDimensions(TAG);
+        Double widthDouble = results[0] * 0.48;
+        Double heightDouble = results[1] * 0.31;
+        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+        imageHandler.loadIntoImageView(minDimension, minDimension, R.drawable.add_entry_teal,
+                images[index]);
         titles[index].setText("");
         captions[index].setText("");
 
@@ -214,6 +208,9 @@ public class DiaryFragment extends Fragment {
         }
     }
 
+    /**
+     * Updates the UI so that the most recent version of the entries are shown in the view
+     */
     private void updateUI(){
         needsUpdating = false; // reset this value
         //update entryHandler
@@ -239,6 +236,30 @@ public class DiaryFragment extends Fragment {
                     containers[i].setVisibility(View.GONE);
                 }
             }
+        }
+    }
+
+    /**
+     * Determines the dimensions of the image and loads it into the image view
+     *
+     * @param filepath the filepath of the image to load
+     * @param view the ImageView to load the image into
+     */
+    private void loadImage(String filepath, ImageView view){
+        // resize and insert image into ImageView
+        int[] results = database.getDimensions(TAG);
+        Double widthDouble = results[0] * 0.48;
+        Double heightDouble = results[1] * 0.31;
+        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+
+        // determine if image exists or not. If it doesn't, load default image
+        if(new File(filepath).exists() ){
+            imageHandler.loadIntoImageView(minDimension, minDimension, filepath, view);
+        }
+        else{
+            //TODO: make a default image
+            imageHandler.loadIntoImageView(minDimension, minDimension, R.drawable.camera_teal,
+                    view);
         }
     }
 

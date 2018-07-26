@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 
 import Entry.Entry;
@@ -90,13 +91,7 @@ public class DetailFragment extends Fragment {
         image = (ImageView) view.findViewById(R.id.img);
 
         if(database.doesDimensionsExists(TAG)){
-            // check if values have changed compared to database
-            int[] dimensions = database.getDimensions(TAG);
-            Double widthDouble = dimensions[0] * 0.98;
-            Double heightDouble = dimensions[1] * 0.48;
-            int minDimensions = Math.min(widthDouble.intValue(), heightDouble.intValue());
-            imageHandler.loadIntoImageView(minDimensions, minDimensions, entry.getImageFilePath(),
-                    image);
+            loadImage(entry.getImageFilePath());
 
             view.post(new Runnable() {
                 @Override
@@ -115,14 +110,9 @@ public class DetailFragment extends Fragment {
                 @Override
                 public void run() {
                     if(view.getWidth() > 0 && view.getHeight() > 0){
-                        Double widthDouble = view.getWidth() * 0.98;
-                        Double heightDouble = view.getHeight() * 0.48;
-                        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-                        imageHandler.loadIntoImageView(minDimension, minDimension,
-                                entry.getImageFilePath(), image);
+                        loadImage(entry.getImageFilePath());
 
                         // values need to be added to the database
-
                         database.addDimensions(TAG, view.getWidth(), view.getHeight());
                     }
                 }
@@ -183,8 +173,6 @@ public class DetailFragment extends Fragment {
         database.updateEntryHandler(entryHandler);
 
         // return to DiaryActivity
-//        Intent intent = DiaryActivity.newInstance(getActivity(), entryHandler.getStringDate());
-//        startActivity(intent);
         getActivity().onBackPressed();
     }
 
@@ -213,6 +201,23 @@ public class DetailFragment extends Fragment {
             }
         });AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    /**
+     * Determines the dimensions of the image and loads it into the image view
+     */
+    private void loadImage(String filepath){
+        int[] dimensions = database.getDimensions(TAG);
+        Double widthDouble = dimensions[0] * 0.98;
+        Double heightDouble = dimensions[1] * 0.48;
+        int minDimensions = Math.min(widthDouble.intValue(), heightDouble.intValue());
+        if(new File(filepath).exists()){
+            imageHandler.loadIntoImageView(minDimensions, minDimensions, filepath, image);
+        }
+        else{
+            imageHandler.loadIntoImageView(minDimensions, minDimensions, R.drawable.camera_teal,
+                    image);
+        }
     }
 
     //-------- Fragment Methods
