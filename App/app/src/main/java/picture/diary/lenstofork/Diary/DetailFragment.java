@@ -35,7 +35,6 @@ public class DetailFragment extends Fragment {
     private TextView descriptionTxt;
 
     // variables
-    private boolean isInEditMode = false;
     private DatabaseHandler database;
     private EntryHandler entryHandler;
     private Entry entry;
@@ -110,10 +109,10 @@ public class DetailFragment extends Fragment {
                 @Override
                 public void run() {
                     if(view.getWidth() > 0 && view.getHeight() > 0){
-                        loadImage(entry.getImageFilePath());
-
                         // values need to be added to the database
                         database.addDimensions(TAG, view.getWidth(), view.getHeight());
+
+                        loadImage(entry.getImageFilePath());
                     }
                 }
             });

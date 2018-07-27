@@ -169,12 +169,17 @@ public class DiaryFragment extends Fragment {
      */
     private void setUpAddEntryContainer(final int index){
         // set default picture for adding a new pic
-        int[] results = database.getDimensions(TAG);
-        Double widthDouble = results[0] * 0.48;
-        Double heightDouble = results[1] * 0.31;
-        int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-        imageHandler.loadIntoImageView(minDimension, minDimension, R.drawable.add_entry_teal,
-                images[index]);
+        if(database.doesDimensionsExists(DiaryFragment.TAG)){
+            int[] results = database.getDimensions(TAG);
+            Double widthDouble = results[0] * 0.48;
+            Double heightDouble = results[1] * 0.31;
+            int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
+            imageHandler.loadIntoImageView(minDimension, minDimension, R.drawable.add_entry_teal,
+                    images[index]);
+        }
+        else{
+            images[index].setImageResource(R.drawable.add_entry_teal);
+        }
         titles[index].setText("");
         captions[index].setText("");
 

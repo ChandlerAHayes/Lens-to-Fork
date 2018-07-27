@@ -1,8 +1,5 @@
 package Entry;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import java.io.File;
 
 public class Entry {
@@ -39,17 +36,11 @@ public class Entry {
     }
 
     public void setImageFilePath(String filePath) {
+        if(!filePath.equals("")){
+            // delete old file
+            new File(this.filepath).delete();
+        }
         this.filepath = filePath;
-    }
-
-    // Bitmap Image
-    public Bitmap getImage(){
-        if(new File(filepath).exists()){
-            return BitmapFactory.decodeFile(filepath);
-        }
-        else{
-            return null;
-        }
     }
 
     // Title
@@ -86,6 +77,23 @@ public class Entry {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setCaptionColor(CaptionColor color){
+        this.captionColor = color;
+    }
+
+    public void setCaptionColor(String colorString){
+        if("white".equals(colorString.toLowerCase())){
+            this.captionColor = CaptionColor.WHITE;
+        }
+        else if("black".equals(colorString.toLowerCase())){
+            this.captionColor = CaptionColor.BLACK;
+        }
+    }
+
+    public CaptionColor getCaptionColor() {
+        return captionColor;
     }
 
     //-------- Object Methods
@@ -129,22 +137,5 @@ public class Entry {
             return false;
         }
         return true;
-    }
-
-    public void setCaptionColor(CaptionColor color){
-        this.captionColor = color;
-    }
-
-    public void setCaptionColor(String colorString){
-        if("white".equals(colorString.toLowerCase())){
-            this.captionColor = CaptionColor.WHITE;
-        }
-        else if("black".equals(colorString.toLowerCase())){
-            this.captionColor = CaptionColor.BLACK;
-        }
-    }
-
-    public CaptionColor getCaptionColor() {
-        return captionColor;
     }
 }
