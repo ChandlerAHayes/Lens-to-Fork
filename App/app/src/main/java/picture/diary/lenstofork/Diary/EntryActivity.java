@@ -42,16 +42,10 @@ public class EntryActivity extends AppCompatActivity {
         String fragmentTag = extras.getStringExtra(EXTRA_FRAGMENT_TAG);
 
         // determine which fragment to display
-        final FragmentController controller = new FragmentController(getSupportFragmentManager());
-
-        if(fragmentTag.equals(NewEntryFragment.TAG)){
-            controller.openFragment(NewEntryFragment.newInstance(dateString), NewEntryFragment.TAG);
-        }
-        else if(fragmentTag.equals(DetailFragment.TAG)){
-            int position = extras.getIntExtra(EXTRA_ENTRY_POSITION, 0);
-            controller.openFragment(DetailFragment.newInstance(position, dateString),
-                    NewEntryFragment.TAG);
-        }
+        FragmentController controller = new FragmentController(getSupportFragmentManager());
+        int position = extras.getIntExtra(EXTRA_ENTRY_POSITION, 0);
+        controller.openFragment(DetailFragment.newInstance(position, dateString),
+                NewEntryActivity.TAG);
     }
 
     /**

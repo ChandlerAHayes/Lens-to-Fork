@@ -44,7 +44,6 @@ public class ImageHandler {
     //--------- Select a New Image Using Device's Camera
 
     /**
-     * Starts the processing of taking a new picture using the device's camera
      *
      * @param fragment the fragment calling the method
      */
@@ -57,6 +56,23 @@ public class ImageHandler {
                         "lenstofork.android.fileprovider", imageFile);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 fragment.startActivityForResult(takePictureIntent, RESULT_CODE_CAMERA);
+            }
+        }
+    }
+
+    /**
+     * Starts the processing of taking a new picture using the device's camera
+     * @param activity the activity calling the method
+     */
+    public void takeNewPicture(Activity activity){
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(takePictureIntent.resolveActivity(activity.getPackageManager()) != null){
+            imageFile = createImageFile();
+            if(imageFile != null){
+                Uri imageUri = FileProvider.getUriForFile(activity.getApplicationContext(),
+                        "lenstofork.android.fileprovider", imageFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                activity.startActivityForResult(takePictureIntent, RESULT_CODE_CAMERA);
             }
         }
     }
@@ -83,6 +99,18 @@ public class ImageHandler {
         Intent pickImageIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         fragment.startActivityForResult(Intent.createChooser(pickImageIntent, "SELECT FILE"),
+                RESULT_CODE_GALLERY);
+    }
+
+    /**
+     * Starts the process of selecting an image from the device's gallery
+     *
+     * @param activity the fragment calling this method
+     */
+    public void selectImage(Activity activity){
+        Intent pickImageIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        activity.startActivityForResult(Intent.createChooser(pickImageIntent, "SELECT FILE"),
                 RESULT_CODE_GALLERY);
     }
 

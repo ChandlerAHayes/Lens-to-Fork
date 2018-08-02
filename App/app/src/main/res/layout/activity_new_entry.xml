@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:titleTextColor="@android:color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
+        android:fillViewport="true">
+
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <RelativeLayout
+                    android:id="@+id/colored_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/darker_gray"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="15dp">
+
+                    <EditText
+                        android:id="@+id/txt_entry_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Title"
+                        android:singleLine="true"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textColorHint="@color/dividerColor" />
+
+                    <ImageView
+                        android:id="@+id/img_entry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txt_entry_title"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="15dp"
+                        app:srcCompat="@drawable/camera_teal" />
+
+                    <TextView
+                        android:id="@+id/txt_image_prompt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignRight="@+id/img_entry"
+                        android:layout_below="@+id/img_entry"
+                        android:layout_marginTop="5dp"
+                        android:text="Choose an image"
+                        android:textColor="@android:color/white" />
+
+                </RelativeLayout>
+
+                <EditText
+                    android:id="@+id/txt_entry_caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/colored_layout"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_toLeftOf="@+id/img_caption_color"
+                    android:hint="Caption"
+                    android:singleLine="true"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/img_caption_color"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/colored_layout"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="#c9c9c9"
+                    app:srcCompat="@drawable/colored_caption_white" />
+
+                <EditText
+                    android:id="@+id/txt_entry_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/txt_entry_caption"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/text_view_border"
+                    android:ems="10"
+                    android:gravity="top"
+                    android:hint="Description"
+                    android:inputType="textPersonName"
+                    android:lines="5"
+                    android:minHeight="100dp"
+                    android:paddingBottom="1dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="1dp"
+                    android:paddingTop="1dp" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/bttn_submit"
+                style="@style/ColoredButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/layout"
+                android:layout_marginBottom="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="30dp"
+                android:text="Submit" />
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

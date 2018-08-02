@@ -183,13 +183,13 @@ public class DiaryFragment extends Fragment {
         titles[index].setText("");
         captions[index].setText("");
 
-        // go to NewEntryFragment, to create a new Entry
+        // go to NewEntryActivity, to create a new Entry
         containers[index].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // go to add new entry page
-                Intent intent = EntryActivity.newInstance(NewEntryFragment.TAG,
-                        entryHandler.getStringDate(), getActivity());
+                Intent intent = NewEntryActivity.newInstance(getActivity(),
+                        entryHandler.getStringDate());
                 startActivity(intent);
             }
         });
