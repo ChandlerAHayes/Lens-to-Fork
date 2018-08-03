@@ -19,6 +19,9 @@ android {
         }
     }
 }
+ext {
+    supportLibVersion = '27.1.1'  // variable that can be referenced to keep support libs consistent
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -32,4 +35,6 @@ dependencies {
 
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
+    // support design library
+    implementation "com.android.support:design:${supportLibVersion}"
 }

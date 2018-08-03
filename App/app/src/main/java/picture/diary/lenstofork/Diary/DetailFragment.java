@@ -254,9 +254,7 @@ public class DetailFragment extends Fragment {
                 transaction.replace(R.id.main_content, fragment, EditFragment.TAG);
                 transaction.addToBackStack(EditFragment.TAG);
                 transaction.commit();
-
                 return true;
-
             case R.id.delete:
                 confirmDelete();
                 return true;

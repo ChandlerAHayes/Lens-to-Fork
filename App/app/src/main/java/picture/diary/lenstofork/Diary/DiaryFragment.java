@@ -155,8 +155,8 @@ public class DiaryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 needsUpdating = true;
-                Intent intent = EntryActivity.newInstance(DetailFragment.TAG,
-                        entryHandler.getStringDate(),index, getActivity());
+                Intent intent = EntryActivity.newInstance(entryHandler.getStringDate(),index,
+                        getActivity());
                 startActivity(intent);
             }
         });
