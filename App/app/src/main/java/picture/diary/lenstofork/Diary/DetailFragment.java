@@ -2,10 +2,9 @@ package picture.diary.lenstofork.Diary;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -160,6 +159,16 @@ public class DetailFragment extends Fragment {
         }
     }
 
+    private void updateUI(){
+        // update the entrHandler and entry
+        entryHandler = database.getEntryHandler(entryHandler.getStringDate());
+        entry = entryHandler.getEntry(position);
+
+        // update view
+        loadImage(entry.getImageFilePath());
+        configureTextViews();
+    }
+
     //---------- Editing Entries Methods
 
     /**
@@ -247,13 +256,10 @@ public class DetailFragment extends Fragment {
                 return true;
 
             case R.id.edit:
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                EditFragment fragment = EditFragment.newInstance(entryHandler.getStringDate(),
+                //newIntent(Activity activity, String entryHandler, int entryIndex)
+                Intent intent = EditActivity.newIntent(getActivity(), entryHandler.getStringDate(),
                         position);
-                transaction.replace(R.id.main_content, fragment, EditFragment.TAG);
-                transaction.addToBackStack(EditFragment.TAG);
-                transaction.commit();
+                startActivity(intent);
                 return true;
             case R.id.delete:
                 confirmDelete();
@@ -264,4 +270,15 @@ public class DetailFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        // check if entry has been updated in the database
+        Entry updatedEntry = database.getEntryHandler(entryHandler.getStringDate())
+                .getEntry(position);
+        if(!entry.equals(updatedEntry)){
+            updateUI();
+        }
+
+        super.onResume();
+    }
 }

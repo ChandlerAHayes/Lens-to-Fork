@@ -10,25 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/bttn_submit"
-            style="@style/ColoredButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/main_content"
-            android:layout_marginBottom="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="20dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:text="Save Changes" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:titleTextColor="@android:color/white" />
 
         <RelativeLayout
             android:id="@+id/main_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar">
 
             <RelativeLayout
                 android:id="@+id/colored_layout"
@@ -177,6 +171,21 @@
             </RelativeLayout>
 
         </RelativeLayout>
+
+        <Button
+            android:id="@+id/bttn_submit"
+            style="@style/ColoredButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="false"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/main_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="Save Changes" />
 
     </RelativeLayout>
 
