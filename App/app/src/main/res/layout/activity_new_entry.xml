@@ -47,7 +47,14 @@
                         android:hint="Title"
                         android:singleLine="true"
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:textColor="@android:color/white"
                         android:textColorHint="@color/dividerColor" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    </RelativeLayout>
 
                     <ImageView
                         android:id="@+id/img_entry"
