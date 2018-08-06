@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -116,24 +117,30 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
             showPaletteView();
         }
 
-        mAlertDialog = new AlertDialog.Builder(activity)
-            .setTitle(mTitleResId)
-            .setView(view)
-            .create();
+        mAlertDialog = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme)
+                .setTitle(mTitleResId)
+                .setView(view)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mListener.onColorSelected(mSelectedColor);
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAlertDialog.dismiss();
+                    }
+                })
+                .create();
 
         return mAlertDialog;
     }
 
     @Override
     public void onColorSelected(int color) {
-        if (mListener != null) {
-            mListener.onColorSelected(color);
-        }
-
         if (getTargetFragment() instanceof OnColorSelectedListener) {
-            final OnColorSelectedListener listener =
-                    (OnColorSelectedListener) getTargetFragment();
-            listener.onColorSelected(color);
+            final OnColorSelectedListener listener = (OnColorSelectedListener) getTargetFragment();
         }
 
         if (color != mSelectedColor) {
@@ -141,8 +148,6 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
             // Redraw palette to show checkmark on newly selected color before dismissing.
             mPalette.drawPalette(mColors, mSelectedColor);
         }
-
-        dismiss();
     }
 
     public void showPaletteView() {

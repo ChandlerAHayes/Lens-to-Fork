@@ -4,4 +4,48 @@
     <color name="colorPrimaryDark">#00796B</color>
     <color name="colorAccent">#FF4081</color>
     <color name="dividerColor">#f5f5f5</color>
+
+    <!-- Color Picker Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="blue_grey">#5E7C8B</color>
+    <color name="grey">#9D9D9D</color>
+    <color name="deep_orange">#fc6f2d</color>
+    <color name="orange">#FF9800</color>
+    <color name="yellow">#FFEC16</color>
+    <color name="lime">#CCDD1E</color>
+    <color name="light_green">#88C440</color>
+    <color name="green">#3da641</color>
+    <color name="teal">#00b8a5</color>
+    <color name="blue">#1093F5</color>
+    <color name="deep_blue">#1355d1</color>
+    <color name="indigo">#3D4DB7</color>
+    <color name="deep_purple">#6633B9</color>
+    <color name="purple">#9C1AB1</color>
+    <color name="pink">#EB1460</color>
+    <color name="red">#F6402C</color>
+
+    <array name="colorPicker">
+        <item>@color/white</item>
+        <item>@color/black</item>
+        <item>@color/blue_grey</item>
+        <item>@color/grey</item>
+        <item>@color/deep_orange</item>
+        <item>@color/orange</item>
+        <item>@color/yellow</item>
+        <item>@color/lime</item>
+        <item>@color/light_green</item>
+        <item>@color/green</item>
+        <item>@color/teal</item>
+        <item>@color/blue</item>
+        <item>@color/deep_blue</item>
+        <item>@color/indigo</item>
+        <item>@color/deep_purple</item>
+        <item>@color/purple</item>
+        <item>@color/pink</item>
+        <item>@color/purple</item>
+
+
+
+    </array>
 </resources>

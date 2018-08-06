@@ -19,6 +19,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.colorpicker.ColorPickerDialog;
+import com.android.colorpicker.ColorPickerSwatch;
+
 import Entry.CaptionColor;
 import Entry.Entry;
 import Entry.EntryHandler;
@@ -91,16 +94,21 @@ public class NewEntryActivity extends AppCompatActivity {
         imgColorCaption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // toggle between white and black font for the caption color
-                if(captionColor.equals(CaptionColor.WHITE)){
-                    // switch to black font
-                    captionColor = CaptionColor.BLACK;
-                    imgColorCaption.setImageResource(R.drawable.colored_caption_black);
-                }
-                else{
-                    captionColor = CaptionColor.WHITE;
-                    imgColorCaption.setImageResource(R.drawable.colored_caption_white);
-                }
+                final int[] colors = getResources().getIntArray(R.array.colorPicker);
+
+                final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
+                colorPickerDialog.initialize(R.string.color_picker, colors,
+                        ContextCompat.getColor(getApplicationContext(), R.color.white),
+                        4, colors.length);
+                colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.
+                        OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int color) {
+                        imgColorCaption.setBackgroundColor(color);
+                        colorPickerDialog.setSelectedColor(color);
+                    }
+                });
+                colorPickerDialog.show(getFragmentManager(), "Main");
             }
         });
     }

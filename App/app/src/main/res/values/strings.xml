@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Lens to Fork</string>
+    <string name="color_picker">Select a Caption Color</string>
 </resources>
