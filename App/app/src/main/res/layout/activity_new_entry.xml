@@ -97,7 +97,7 @@
                     android:layout_below="@+id/colored_layout"
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="15dp"
-                    android:background="#c9c9c9"
+                    android:background="@drawable/colored_caption_background"
                     app:srcCompat="@drawable/colored_caption_white" />
 
                 <EditText

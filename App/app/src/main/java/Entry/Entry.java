@@ -84,12 +84,13 @@ public class Entry {
     }
 
     public void setCaptionColor(String colorString){
-        if("white".equals(colorString.toLowerCase())){
-            this.captionColor = CaptionColor.WHITE;
-        }
-        else if("black".equals(colorString.toLowerCase())){
-            this.captionColor = CaptionColor.BLACK;
-        }
+        this.captionColor = CaptionColor.getColorEnum(colorString);
+//        if("white".equals(colorString.toLowerCase())){
+//            this.captionColor = CaptionColor.WHITE;
+//        }
+//        else if("black".equals(colorString.toLowerCase())){
+//            this.captionColor = CaptionColor.BLACK;
+//        }
     }
 
     public CaptionColor getCaptionColor() {

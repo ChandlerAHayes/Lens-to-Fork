@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,7 +38,7 @@ public class NewEntryActivity extends AppCompatActivity {
     private EditText captionTxt;
     private EditText descriptionTxt;
     private Button submitBttn;
-    private ImageView imgColorCaption;
+    private ImageView imgCaptionColor;
 
     //------- Variables
     private static EntryHandler entryHandler;
@@ -90,25 +92,31 @@ public class NewEntryActivity extends AppCompatActivity {
             }
         });
 
-        imgColorCaption = (ImageView) findViewById(R.id.img_caption_color);
-        imgColorCaption.setOnClickListener(new View.OnClickListener() {
+        imgCaptionColor = (ImageView) findViewById(R.id.img_caption_color);
+        imgCaptionColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final int[] colors = getResources().getIntArray(R.array.colorPicker);
 
                 final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
                 colorPickerDialog.initialize(R.string.color_picker, colors,
-                        ContextCompat.getColor(getApplicationContext(), R.color.white),
-                        4, colors.length);
+                        captionColor.getColor(), 4, colors.length);
                 colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.
                         OnColorSelectedListener() {
                     @Override
                     public void onColorSelected(int color) {
-                        imgColorCaption.setBackgroundColor(color);
                         colorPickerDialog.setSelectedColor(color);
+                        captionColor = CaptionColor.getColorEnum(color);
+
+                        // change color of caption icon
+                        Drawable background = ContextCompat.getDrawable(NewEntryActivity
+                                        .this, R.drawable.colored_caption_white);
+                        background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
+//                        background.setTint(captionColor.getColor());
+                        imgCaptionColor.setImageDrawable(background);
                     }
                 });
-                colorPickerDialog.show(getFragmentManager(), "Main");
+                colorPickerDialog.show(getFragmentManager(), TAG);
             }
         });
     }

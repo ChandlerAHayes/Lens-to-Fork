@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -14,6 +17,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.android.colorpicker.ColorPickerDialog;
+import com.android.colorpicker.ColorPickerSwatch;
 
 import java.io.File;
 
@@ -137,23 +143,31 @@ public class EditActivity extends AppCompatActivity{
         }
 
         // caption color
-        if(entry.getCaptionColor().equals(CaptionColor.BLACK)){
-            imgCaptionColor.setImageResource(R.drawable.colored_caption_black);
-        }
+        imgCaptionColor.setBackgroundColor(captionColor.getColor());
         imgCaptionColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // toggle current color for caption
-                if(entry.getCaptionColor().equals(CaptionColor.WHITE)){
-                    // toggle to black
-                    imgCaptionColor.setImageResource(R.drawable.colored_caption_black);
-                    entry.setCaptionColor(CaptionColor.BLACK);
-                }
-                else{
-                    // toggle to white
-                    imgCaptionColor.setImageResource(R.drawable.colored_caption_white);
-                    entry.setCaptionColor(CaptionColor.WHITE);
-                }
+                final int[] colors = getResources().getIntArray(R.array.colorPicker);
+
+                final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
+                colorPickerDialog.initialize(R.string.color_picker, colors,
+                        captionColor.getColor(), 4, colors.length);
+                colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.
+                        OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int color) {
+                        colorPickerDialog.setSelectedColor(color);
+                        captionColor = CaptionColor.getColorEnum(color);
+
+                        // change color of caption icon
+                        imgCaptionColor.setBackgroundColor(color);
+                    }
+                });
+                colorPickerDialog.show(getFragmentManager(), TAG);
+                Drawable background = ContextCompat.getDrawable(EditActivity.this,
+                        R.drawable.colored_caption_white);
+                background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
+                imgCaptionColor.setImageDrawable(background);
             }
         });
 
@@ -218,6 +232,7 @@ public class EditActivity extends AppCompatActivity{
 
         if(!captionColor.equals(entry.getCaptionColor())){
             hasEntryChanged = true;
+            entry.setCaptionColor(captionColor);
         }
 
         if(!description.equals(entry.getDescription())){

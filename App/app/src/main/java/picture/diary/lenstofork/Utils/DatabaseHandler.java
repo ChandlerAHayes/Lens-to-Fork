@@ -19,6 +19,7 @@ import Entry.EntryHandler;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "database.db";
+    private Context context;
 
     //-------- Entries Table
     public static final String TABLE_ENTRY = "entries";
@@ -48,6 +49,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public DatabaseHandler(Context context){
         super(context, DATABASE_NAME, null, 1);
+        this.context = context;
     }
 
     @Override
@@ -284,7 +286,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_IMG, entry.getImageFilePath());
         values.put(KEY_TITLE, entry.getTitle());
         values.put(KEY_CAPTION, entry.getCaption());
-        values.put(KEY_CAPTION_COLOR, entry.getCaptionColor().getColorValue());
+        values.put(KEY_CAPTION_COLOR, entry.getCaptionColor().getColorString());
         values.put(KEY_DESCRIPTION, entry.getDescription());
 
         //insert row and save the id in the entryIDs variables
