@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,7 +41,7 @@ import picture.diary.lenstofork.Utils.ImageHandler;
 public class NewEntryActivity extends AppCompatActivity {
     //widgets
     private EditText titleTxt, descriptionTxt, captionTxt;
-    private TextView captionHeader, descriptionHeader, spinnerTitleTxt;
+    private TextView captionHeader, descriptionHeader, spinnerTitleTxt, captionPreviewTxt;
     private ImageView image, imgCaptionMenu, imgCaptionColor, imgDescriptionMenu;
     private Spinner captionSpinner;
     private Button submitBttn;
@@ -90,6 +93,7 @@ public class NewEntryActivity extends AppCompatActivity {
         imgCaptionMenu = (ImageView) findViewById(R.id.img_menu_caption);
         spinnerTitleTxt = (TextView) findViewById(R.id.txt_capt_spinner);
         captionSpinner = (Spinner) findViewById(R.id.spinner_capt_pos);
+        captionPreviewTxt = (TextView)findViewById(R.id.txt_capt_preview);
         configureCaptionAttributes();
 
         // description
@@ -217,6 +221,8 @@ public class NewEntryActivity extends AppCompatActivity {
                                 .this, R.drawable.colored_caption_white);
                         background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
                         imgCaptionColor.setImageDrawable(background);
+                        // change color of preview
+                        captionPreviewTxt.setTextColor(color);
                     }
                 });
                 colorPickerDialog.show(getFragmentManager(), TAG);
@@ -225,6 +231,22 @@ public class NewEntryActivity extends AppCompatActivity {
 
         // caption position
         configureCaptionSpinner();
+
+        // get caption when user is done typing
+        captionTxt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                captionPreviewTxt.setText(s.toString());
+            }
+        });
     }
 
     /**
@@ -262,8 +284,10 @@ public class NewEntryActivity extends AppCompatActivity {
         captionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String captionPosString = (String) parent.getItemAtPosition(position);
-                captionPosition = CaptionPosition.getCaptionPosition(captionPosString);
+                // save selected position
+                String captionPositionStr = (String) parent.getItemAtPosition(position);
+                captionPosition = CaptionPosition.getCaptionPosition(captionPositionStr);
+                moveCaptionPreview();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -271,6 +295,67 @@ public class NewEntryActivity extends AppCompatActivity {
 
         // set entry's current caption position in the spinner
         captionSpinner.setSelection(adapter.getPosition(CaptionPosition.CENTER.getValue()));
+    }
+
+    private void moveCaptionPreview(){
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout
+                .LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(5, 5, 5, 5);
+
+        switch(captionPosition){
+            case TOP_LEFT:
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case TOP_CENTER:
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case TOP_RIGHT:
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                params.addRule(RelativeLayout.ALIGN_RIGHT, image.getId());
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case LEFT_CENTER:
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case CENTER:
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case RIGHT_CENTER:
+                params.addRule(RelativeLayout.ALIGN_RIGHT, image.getId());
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case BOTTOM_LEFT:
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case BOTTOM_CENTER:
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+
+            case BOTTOM_RIGHT:
+                params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                params.addRule(RelativeLayout.ALIGN_RIGHT, image.getId());
+                captionPreviewTxt.setLayoutParams(params);
+                break;
+        }
     }
 
     /**
@@ -341,7 +426,7 @@ public class NewEntryActivity extends AppCompatActivity {
         imageFilePath = imageHandler.getFilepath();
         Entry entry = new Entry(imageFilePath, title, caption, description);
         entry.setCaptionColor(captionColor);
-        entry.setCaptionPosition(CaptionPosition.CENTER);
+        entry.setCaptionPosition(captionPosition);
 
         // add new entry to database
         entryHandler.addEntry(entry);
