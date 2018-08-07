@@ -29,10 +29,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/darker_gray"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
                 android:paddingBottom="10dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:paddingTop="10dp">
+                android:paddingTop="10dp"
+                android:visibility="visible">
 
                 <EditText
                     android:id="@+id/txt_title"
@@ -46,21 +49,39 @@
                     android:textColor="@android:color/white"
                     android:textColorHint="@color/dividerColor" />
 
-                <ImageView
-                    android:id="@+id/image"
+                <RelativeLayout
+                    android:id="@+id/layout_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/txt_title"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="15dp"
-                    app:srcCompat="@drawable/camera_teal" />
+                    android:layout_marginTop="15dp">
+
+                    <ImageView
+                        android:id="@+id/image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/txt_title"
+                        android:layout_centerHorizontal="true"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        app:srcCompat="@drawable/camera_teal" />
+
+                    <TextView
+                        android:id="@+id/txt_capt_preview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:textColor="@android:color/white"
+                        android:textStyle="bold" />
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/header_image"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignRight="@+id/image"
-                    android:layout_below="@+id/image"
+                    android:layout_alignRight="@+id/layout_image"
+                    android:layout_below="@+id/layout_image"
                     android:layout_marginTop="5dp"
                     android:text="Tap on photo to change it"
                     android:textColor="@android:color/white" />
@@ -94,6 +115,7 @@
                     android:layout_alignTop="@+id/header_caption"
                     android:layout_marginBottom="5dp"
                     android:layout_marginRight="15dp"
+                    android:visibility="visible"
                     app:srcCompat="@drawable/arrow_down_black" />
 
                 <ImageView
@@ -121,6 +143,26 @@
                     android:inputType="text"
                     android:singleLine="true"
                     android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txt_capt_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/txt_caption"
+                    android:layout_below="@+id/txt_caption"
+                    android:text="@string/caption_position_title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+
+                <Spinner
+                    android:id="@+id/spinner_capt_pos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/txt_caption"
+                    android:layout_below="@+id/txt_capt_spinner"
+                    android:visibility="gone" />
+
             </RelativeLayout>
 
             <RelativeLayout
@@ -130,7 +172,8 @@
                 android:layout_below="@+id/layout_caption"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="15dp"
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/header_description"
@@ -185,7 +228,8 @@
             android:layout_marginTop="20dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="Save Changes" />
+            android:text="Save Changes"
+            android:visibility="visible" />
 
     </RelativeLayout>
 

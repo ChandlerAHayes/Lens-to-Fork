@@ -25,11 +25,12 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/txt_note"
+        android:id="@+id/txt_caption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         android:paddingTop="18dp"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
 </RelativeLayout>

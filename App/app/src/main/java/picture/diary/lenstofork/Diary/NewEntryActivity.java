@@ -24,9 +24,10 @@ import android.widget.TextView;
 import com.android.colorpicker.ColorPickerDialog;
 import com.android.colorpicker.ColorPickerSwatch;
 
-import Entry.CaptionColor;
-import Entry.Entry;
-import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Entry.CaptionColor;
+import picture.diary.lenstofork.Diary.Entry.CaptionPosition;
+import picture.diary.lenstofork.Diary.Entry.Entry;
+import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
 import picture.diary.lenstofork.Utils.ImageHandler;
@@ -34,9 +35,7 @@ import picture.diary.lenstofork.Utils.ImageHandler;
 public class NewEntryActivity extends AppCompatActivity {
     //widgets
     private ImageView entryImage;
-    private EditText titleTxt;
-    private EditText captionTxt;
-    private EditText descriptionTxt;
+    private EditText titleTxt, captionTxt, descriptionTxt;
     private Button submitBttn;
     private ImageView imgCaptionColor;
 
@@ -49,8 +48,8 @@ public class NewEntryActivity extends AppCompatActivity {
     private CaptionColor captionColor = CaptionColor.WHITE;
 
     //------- Constants
-    public static final String TAG = "New Entry Activity";
-    public static final String EXTRA_ENTRY_HANDLER = "Entry Handler";
+    public static final String TAG = "New picture.diary.lenstofork.Diary.Entry Activity";
+    public static final String EXTRA_ENTRY_HANDLER = "picture.diary.lenstofork.Diary.Entry Handler";
     public static final int REQUEST_CODE_READ_PERMISSION = 3;
 
     @Override
@@ -106,13 +105,12 @@ public class NewEntryActivity extends AppCompatActivity {
                     @Override
                     public void onColorSelected(int color) {
                         colorPickerDialog.setSelectedColor(color);
-                        captionColor = CaptionColor.getColorEnum(color);
+                        captionColor = CaptionColor.getCaptionColor(color);
 
                         // change color of caption icon
                         Drawable background = ContextCompat.getDrawable(NewEntryActivity
                                         .this, R.drawable.colored_caption_white);
                         background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
-//                        background.setTint(captionColor.getColor());
                         imgCaptionColor.setImageDrawable(background);
                     }
                 });
@@ -212,7 +210,7 @@ public class NewEntryActivity extends AppCompatActivity {
 
     /**
      * Takes in all the data the user entered (title, caption, and image) and uses to make a new
-     * Entry object which is added to the current date's EntryHandler
+     * picture.diary.lenstofork.Diary.Entry object which is added to the current date's EntryHandler
      */
     private void submitEntry(){
         // create new entry
@@ -222,6 +220,7 @@ public class NewEntryActivity extends AppCompatActivity {
         imageFilePath = imageHandler.getFilepath();
         Entry entry = new Entry(imageFilePath, title, caption, description);
         entry.setCaptionColor(captionColor);
+        entry.setCaptionPosition(CaptionPosition.CENTER);
 
         // add new entry to database
         entryHandler.addEntry(entry);

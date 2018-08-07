@@ -1,4 +1,4 @@
-package Entry;
+package picture.diary.lenstofork.Diary.Entry;
 
 import android.graphics.Color;
 
@@ -46,7 +46,7 @@ public enum CaptionColor {
         return color;
     }
 
-    public static CaptionColor getColorEnum(String colorString){
+    public static CaptionColor getCaptionColor(String colorString){
         switch (colorString){
             case "white":
                 return WHITE;
@@ -93,7 +93,7 @@ public enum CaptionColor {
         }
     }
 
-    public static CaptionColor getColorEnum(int color){
+    public static CaptionColor getCaptionColor(int color){
         if(color == WHITE.color){
             return WHITE;
         }

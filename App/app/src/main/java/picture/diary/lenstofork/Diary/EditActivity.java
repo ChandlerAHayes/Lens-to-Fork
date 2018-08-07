@@ -13,9 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.colorpicker.ColorPickerDialog;
@@ -23,9 +26,10 @@ import com.android.colorpicker.ColorPickerSwatch;
 
 import java.io.File;
 
-import Entry.CaptionColor;
-import Entry.Entry;
-import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Entry.CaptionColor;
+import picture.diary.lenstofork.Diary.Entry.CaptionPosition;
+import picture.diary.lenstofork.Diary.Entry.Entry;
+import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
 import picture.diary.lenstofork.Utils.ImageHandler;
@@ -33,17 +37,18 @@ import picture.diary.lenstofork.Utils.ImageHandler;
 public class EditActivity extends AppCompatActivity{
     // widgets
     private EditText titleTxt, descriptionTxt, captionTxt;
-    private TextView captionHeader, descriptionHeader;
-    private ImageView image;
-    private ImageView imgCaptionMenu, imgCaptionColor, imgDescriptionMenu;
+    private TextView captionHeader, descriptionHeader, spinnerTitleTxt;
+    private ImageView image, imgCaptionMenu, imgCaptionColor, imgDescriptionMenu;
+    private Spinner captionSpinner;
     private Button submitBttn;
 
-    // Entry attributes
+    // picture.diary.lenstofork.Diary.Entry attributes
     private String filepath = "";
     private String title = "";
     private String caption = "";
     private String description = "";
     private CaptionColor captionColor;
+    private CaptionPosition captionPosition;
 
     // variables
     private DatabaseHandler database;
@@ -56,8 +61,8 @@ public class EditActivity extends AppCompatActivity{
 
     // constants
     public static final String TAG = "Edit Activity";
-    private static final String EXTRA_ENTRY_HANDLER = "Extra Entry Handler";
-    private static final String EXTRA_ENTRY_INDEX = "Extra Entry Index";
+    private static final String EXTRA_ENTRY_HANDLER = "Extra picture.diary.lenstofork.Diary.Entry Handler";
+    private static final String EXTRA_ENTRY_INDEX = "Extra picture.diary.lenstofork.Diary.Entry Index";
     private static final int REQUEST_CODE_READ_PERMISSION = 3;
 
     @Override
@@ -66,7 +71,7 @@ public class EditActivity extends AppCompatActivity{
         setContentView(R.layout.activity_edit);
 
         imageHandler = new ImageHandler(this, DetailFragment.TAG);
-        // get Entry & EntryHandler from database
+        // get picture.diary.lenstofork.Diary.Entry & EntryHandler from database
         database = new DatabaseHandler(this);
         Intent arguments = getIntent();
         entryHandler = database.getEntryHandler(arguments.getStringExtra(EXTRA_ENTRY_HANDLER));
@@ -107,13 +112,14 @@ public class EditActivity extends AppCompatActivity{
 
     /**
      * Initializes the title, caption, captionColor, description, and filepath objects with the
-     * values attached to the Entry object so that it can be compared to see if any of the values
+     * values attached to the picture.diary.lenstofork.Diary.Entry object so that it can be compared to see if any of the values
      * have been changed when the user taps the submitBttn
      */
     private void getOriginalValues(){
         title = entry.getTitle();
         caption = entry.getCaption();
         captionColor = entry.getCaptionColor();
+        captionPosition = entry.getCaptionPosition();
         description = entry.getDescription();
         filepath = entry.getImageFilePath();
     }
@@ -143,7 +149,10 @@ public class EditActivity extends AppCompatActivity{
         }
 
         // caption color
-        imgCaptionColor.setBackgroundColor(captionColor.getColor());
+        Drawable background = ContextCompat.getDrawable(EditActivity.this,
+                R.drawable.colored_caption_white);
+        background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
+        imgCaptionColor.setImageDrawable(background);
         imgCaptionColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,17 +166,16 @@ public class EditActivity extends AppCompatActivity{
                     @Override
                     public void onColorSelected(int color) {
                         colorPickerDialog.setSelectedColor(color);
-                        captionColor = CaptionColor.getColorEnum(color);
+                        captionColor = CaptionColor.getCaptionColor(color);
 
                         // change color of caption icon
-                        imgCaptionColor.setBackgroundColor(color);
+                        Drawable background = ContextCompat.getDrawable(EditActivity.this,
+                                R.drawable.colored_caption_white);
+                        background.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                        imgCaptionColor.setImageDrawable(background);
                     }
                 });
                 colorPickerDialog.show(getFragmentManager(), TAG);
-                Drawable background = ContextCompat.getDrawable(EditActivity.this,
-                        R.drawable.colored_caption_white);
-                background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
-                imgCaptionColor.setImageDrawable(background);
             }
         });
 
@@ -184,6 +192,9 @@ public class EditActivity extends AppCompatActivity{
                 toggleCaptionMenu();
             }
         });
+
+        // caption position
+        configureCaptionSpinner();
 
         // description
         if(!entry.getDescription().equals("")){
@@ -214,7 +225,7 @@ public class EditActivity extends AppCompatActivity{
     }
 
     /**
-     * Gets the values entered and updates the Entry with the database
+     * Gets the values entered and updates the picture.diary.lenstofork.Diary.Entry with the database
      */
     private void submitEntry(){
         boolean hasEntryChanged = false;
@@ -233,6 +244,11 @@ public class EditActivity extends AppCompatActivity{
         if(!captionColor.equals(entry.getCaptionColor())){
             hasEntryChanged = true;
             entry.setCaptionColor(captionColor);
+        }
+
+        if(!captionPosition.equals(entry.getCaptionPosition())){
+            hasEntryChanged = true;
+            entry.setCaptionPosition(captionPosition);
         }
 
         if(!description.equals(entry.getDescription())){
@@ -326,17 +342,45 @@ public class EditActivity extends AppCompatActivity{
      */
     private void toggleCaptionMenu(){
         if(showCaption){
+            showCaption = false;
+
             imgCaptionMenu.setImageResource(R.drawable.arrow_down_black);
             captionTxt.setVisibility(View.GONE);
             imgCaptionColor.setVisibility(View.GONE);
-            showCaption = false;
+            spinnerTitleTxt.setVisibility(View.GONE);
+            captionSpinner.setVisibility(View.GONE);
+
         }
         else{
+            showCaption = true;
+
             imgCaptionMenu.setImageResource(R.drawable.arrow_up_black);
             captionTxt.setVisibility(View.VISIBLE);
             imgCaptionColor.setVisibility(View.VISIBLE);
-            showCaption = true;
-        }
+            spinnerTitleTxt.setVisibility(View.VISIBLE);
+            captionSpinner.setVisibility(View.VISIBLE);}
+    }
+
+    private void configureCaptionSpinner(){
+        spinnerTitleTxt = (TextView) findViewById(R.id.txt_capt_spinner);
+        captionSpinner = (Spinner) findViewById(R.id.spinner_capt_pos);
+        // create ArrayAdapter to populate spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.array_caption_position, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        captionSpinner.setAdapter(adapter);
+        captionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String captionPosString = (String) parent.getItemAtPosition(position);
+                captionPosition = CaptionPosition.getCaptionPosition(captionPosString);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // set entry's current caption position in the spinner
+        captionSpinner.setSelection(adapter.getPosition(captionPosition.getValue()));
     }
 
     /**

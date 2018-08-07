@@ -18,8 +18,8 @@ import android.widget.TextView;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
-import Entry.Entry;
-import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Entry.Entry;
+import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
 import picture.diary.lenstofork.Utils.ImageHandler;
@@ -42,15 +42,15 @@ public class DetailFragment extends Fragment {
 
     // constants
     public static final String TAG = "DetailFragment";
-    private static final String ARG_ENTRY_HANDLER = "Arg Entry Handler";
-    private static final String ARG_ENTRY_POSITION = "Arg Entry Position";
+    private static final String ARG_ENTRY_HANDLER = "Arg picture.diary.lenstofork.Diary.Entry Handler";
+    private static final String ARG_ENTRY_POSITION = "Arg picture.diary.lenstofork.Diary.Entry Position";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         imageHandler = new ImageHandler(getActivity(), TAG);
 
-        // get Entry from database
+        // get picture.diary.lenstofork.Diary.Entry from database
         database = new DatabaseHandler(getContext());
         Bundle arguments = getArguments();
         entryHandler = database.getEntryHandler(arguments.getString(ARG_ENTRY_HANDLER));
@@ -123,7 +123,7 @@ public class DetailFragment extends Fragment {
     //-------- Helper Methods
 
     /**
-     * Configure the TextViews to show Entry info
+     * Configure the TextViews to show picture.diary.lenstofork.Diary.Entry info
      */
     private void configureTextViews(){
         // check title

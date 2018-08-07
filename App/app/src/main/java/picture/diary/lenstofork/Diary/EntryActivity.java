@@ -14,7 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
 
@@ -24,8 +24,8 @@ public class EntryActivity extends AppCompatActivity {
 
     // constants
     private static final String EXTRA_FRAGMENT_TAG = "Extra Fragment Tag";
-    private static final String EXTRA_ENTRY_HANDLER = "Extra Entry Handler";
-    private static final String EXTRA_ENTRY_POSITION = "Extra Entry Position";
+    private static final String EXTRA_ENTRY_HANDLER = "Extra picture.diary.lenstofork.Diary.Entry Handler";
+    private static final String EXTRA_ENTRY_POSITION = "Extra picture.diary.lenstofork.Diary.Entry Position";
     private static int REQUEST_CODE_READ_PERMISSION = 1;
 
     @Override

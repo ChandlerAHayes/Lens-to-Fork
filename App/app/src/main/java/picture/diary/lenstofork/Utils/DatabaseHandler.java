@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import Entry.Entry;
-import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Entry.Entry;
+import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 
 /**
  * https://www.javatpoint.com/android-sqlite-tutorial
@@ -27,8 +27,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public static final String KEY_IMG = "image_file_path";
     public static final String KEY_TITLE = "title";
     public static final String KEY_CAPTION = "caption";
-    public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_CAPTION_COLOR = "caption_color";
+    public static final String KEY_CAPTION_POSITION = "caption_position";
+    public static final String KEY_DESCRIPTION = "description";
 
     //------- EntryHandler Table
     public static final String TABLE_ENTRY_HANDLER = "entry_handler";
@@ -61,6 +62,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 KEY_TITLE + " TEXT, " +
                 KEY_CAPTION + " TEXT, " +
                 KEY_CAPTION_COLOR + " TEXT, " +
+                KEY_CAPTION_POSITION + " TEXT, " +
                 KEY_DESCRIPTION + " TEXT)";
 
         String createHandler =  "CREATE TABLE " + TABLE_ENTRY_HANDLER + "(" +
@@ -108,7 +110,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DATE, handler.getStringDate());
 
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-            // stop when all of the entries are made but have not reached the Entry limit
+            // stop when all of the entries are made but have not reached the picture.diary.lenstofork.Diary.Entry limit
             if(entries[i] == null){
                 break;
             }
@@ -287,6 +289,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_TITLE, entry.getTitle());
         values.put(KEY_CAPTION, entry.getCaption());
         values.put(KEY_CAPTION_COLOR, entry.getCaptionColor().getColorString());
+        values.put(KEY_CAPTION_POSITION, entry.getCaptionPosition().getValue());
         values.put(KEY_DESCRIPTION, entry.getDescription());
 
         //insert row and save the id in the entryIDs variables
@@ -299,14 +302,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * to populate an EntryHandler object with entries.
      *
      * @param id the id of the entry to retrieve
-     * @return an Entry object
+     * @return an picture.diary.lenstofork.Diary.Entry object
      */
     public Entry getEntry(long id){
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(TABLE_ENTRY, new String[]{KEY_ID, KEY_IMG, KEY_TITLE, KEY_CAPTION,
-                        KEY_DESCRIPTION, KEY_CAPTION_COLOR}, KEY_ID + "=?",
-                new String[] { String.valueOf(id) },
+                        KEY_DESCRIPTION, KEY_CAPTION_COLOR, KEY_CAPTION_POSITION},
+                KEY_ID + "=?", new String[] { String.valueOf(id) },
                 null, null, null, null);
 
         if(cursor.moveToFirst()){
@@ -314,17 +317,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             int titleIndex = cursor.getColumnIndex(KEY_TITLE);
             int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
             int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
+            int positionIndex = cursor.getColumnIndex(KEY_CAPTION_POSITION);
             int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
 
             String img = cursor.getString(imageIndex);
             String title = cursor.getString(titleIndex);
-            String note = cursor.getString(captionIndex);
+            String caption = cursor.getString(captionIndex);
             String description = cursor.getString(descriptionIndex);
             String colorString = cursor.getString(colorIndex);
+            String positionString = cursor.getString(positionIndex);
 
             cursor.close();
-            Entry entry = new Entry(id, img, title, note, description);
+            Entry entry = new Entry(id, img, title, caption, description);
             entry.setCaptionColor(colorString);
+            entry.setCaptionPosition(positionString);
             return entry;
         }
         else{
@@ -335,7 +341,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Returns all of the entries from the Entry table
+     * Returns all of the entries from the picture.diary.lenstofork.Diary.Entry table
      *
      * @return
      */
@@ -353,17 +359,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 int titleIndex = cursor.getColumnIndex(KEY_TITLE);
                 int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
                 int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
+                int positionIndex = cursor.getColumnIndex(KEY_CAPTION_POSITION);
                 int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
 
                 Long id = cursor.getLong(idIndex);
                 String img = cursor.getString(imageIndex);
                 String title = cursor.getString(titleIndex);
                 String caption = cursor.getString(captionIndex);
-                String description = cursor.getString(descriptionIndex);
                 String colorCaption = cursor.getString(colorIndex);
+                String positionString = cursor.getString(positionIndex);
+                String description = cursor.getString(descriptionIndex);
 
                 Entry entry = new Entry(id, img, title, caption, description);
                 entry.setCaptionColor(colorCaption);
+                entry.setCaptionPosition(positionString);
                 list.add(entry);
             } while(cursor.moveToNext());
         }
@@ -372,7 +381,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Deletes the row for the given entry from the Entry table
+     * Deletes the row for the given entry from the picture.diary.lenstofork.Diary.Entry table
      *
      * @param entry the entry to be deleted from the database
      * @param db the open connection to the database
@@ -382,25 +391,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String.valueOf(entry.getId())});
     }
 
-    /**
-     * Updates the values for an Entry row item using the given entry.
-     *
-     * @param entry the entry
-     * @param db the open connection to the database
-     * @return number of rows affected
-     */
-    private int updateEntry(Entry entry, SQLiteDatabase db){
-        // update the entry's attributes in the database
-        ContentValues values = new ContentValues();
-        values.put(KEY_IMG, entry.getImageFilePath());
-        values.put(KEY_TITLE, entry.getTitle());
-        values.put(KEY_CAPTION, entry.getCaption());
-        values.put(KEY_DESCRIPTION, entry.getDescription());
-
-        // update row
-        return db.update(TABLE_ENTRY, values, KEY_ID + "=?",
-                new String[]{String.valueOf(entry.getId())});
-    }
 
     //-------- Dimensions Methods
 

@@ -11,8 +11,8 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import Entry.Entry;
-import Entry.EntryHandler;
+import picture.diary.lenstofork.Diary.Entry.Entry;
+import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 import picture.diary.lenstofork.R;
 import picture.diary.lenstofork.Utils.DatabaseHandler;
 import picture.diary.lenstofork.Utils.ImageHandler;
@@ -97,7 +97,7 @@ public class DiaryFragment extends Fragment {
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
             // initialize widgets
             titles[i] = (TextView) containers[i].findViewById(R.id.txt_title);
-            captions[i] = (TextView) containers[i].findViewById(R.id.txt_note);
+            captions[i] = (TextView) containers[i].findViewById(R.id.txt_caption);
             images[i] = (ImageView) containers[i].findViewById(R.id.img);
 
             //------ Set Values for Entries
@@ -141,7 +141,7 @@ public class DiaryFragment extends Fragment {
         String filepath = entry.getImageFilePath();
         loadImage(filepath, images[index]);
 
-        // add onClickListener to view Entry Details or Edit
+        // add onClickListener to view picture.diary.lenstofork.Diary.Entry Details or Edit
         containers[index].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,7 +174,7 @@ public class DiaryFragment extends Fragment {
         titles[index].setText("");
         captions[index].setText("");
 
-        // go to NewEntryActivity, to create a new Entry
+        // go to NewEntryActivity, to create a new picture.diary.lenstofork.Diary.Entry
         containers[index].setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,4 +1,4 @@
-package Entry;
+package picture.diary.lenstofork.Diary.Entry;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -48,7 +48,7 @@ public class EntryHandler implements Serializable {
 //            return false;
 //        }
 //        else{
-//            Entry newEntry = new Entry(imageFilePath, title, caption);
+//            picture.diary.lenstofork.Diary.Entry newEntry = new picture.diary.lenstofork.Diary.Entry(imageFilePath, title, caption);
 //            entries[numEntries] = newEntry;
 //            numEntries++;
 //            return true;

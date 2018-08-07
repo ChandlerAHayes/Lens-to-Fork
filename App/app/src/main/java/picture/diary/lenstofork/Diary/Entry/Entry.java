@@ -1,14 +1,15 @@
-package Entry;
+package picture.diary.lenstofork.Diary.Entry;
 
 import java.io.File;
 
 public class Entry {
     private  Long id;
-    private String filepath = "";
-    private String title = "";
-    private String caption = "";
-    private String description = "";
-    private CaptionColor captionColor = null;
+    private String filepath;
+    private String title;
+    private String caption;
+    private String description;
+    private CaptionColor captionColor;
+    private CaptionPosition captionPosition;
 
     //------- Constructors
     public Entry(String filePath, String title, String caption, String description){
@@ -18,6 +19,7 @@ public class Entry {
         this.caption = caption;
         this.description = description;
         captionColor = CaptionColor.WHITE;
+        captionPosition = CaptionPosition.CENTER;
     }
 
     public Entry(Long id, String filepath, String title, String caption, String description){
@@ -27,6 +29,7 @@ public class Entry {
         this.caption = caption;
         this.description = description;
         captionColor = CaptionColor.WHITE;
+        captionPosition = CaptionPosition.CENTER;
     }
 
     //-------- Setter & Getters
@@ -79,23 +82,33 @@ public class Entry {
         return description;
     }
 
+    // Caption Color
     public void setCaptionColor(CaptionColor color){
         this.captionColor = color;
     }
 
     public void setCaptionColor(String colorString){
-        this.captionColor = CaptionColor.getColorEnum(colorString);
-//        if("white".equals(colorString.toLowerCase())){
-//            this.captionColor = CaptionColor.WHITE;
-//        }
-//        else if("black".equals(colorString.toLowerCase())){
-//            this.captionColor = CaptionColor.BLACK;
-//        }
+        this.captionColor = CaptionColor.getCaptionColor(colorString);
     }
 
     public CaptionColor getCaptionColor() {
         return captionColor;
     }
+
+    // Caption Position
+
+    public void setCaptionPosition(String captionPosition){
+        this.captionPosition = CaptionPosition.getCaptionPosition(captionPosition);
+    }
+
+    public void setCaptionPosition(CaptionPosition captionPosition) {
+        this.captionPosition = captionPosition;
+    }
+
+    public CaptionPosition getCaptionPosition() {
+        return captionPosition;
+    }
+
 
     //-------- Object Methods
 
