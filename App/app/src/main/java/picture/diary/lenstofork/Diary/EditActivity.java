@@ -42,7 +42,7 @@ public class EditActivity extends AppCompatActivity{
     private Spinner captionSpinner;
     private Button submitBttn;
 
-    // picture.diary.lenstofork.Diary.Entry attributes
+    // Entry attributes
     private String filepath = "";
     private String title = "";
     private String caption = "";
@@ -61,17 +61,18 @@ public class EditActivity extends AppCompatActivity{
 
     // constants
     public static final String TAG = "Edit Activity";
-    private static final String EXTRA_ENTRY_HANDLER = "Extra picture.diary.lenstofork.Diary.Entry Handler";
-    private static final String EXTRA_ENTRY_INDEX = "Extra picture.diary.lenstofork.Diary.Entry Index";
+    private static final String EXTRA_ENTRY_HANDLER = "Extra Entry Handler";
+    private static final String EXTRA_ENTRY_INDEX = "Extra Entry Index";
     private static final int REQUEST_CODE_READ_PERMISSION = 3;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit);
+        setContentView(R.layout.entry_forms);
 
+        //-------- Initialize imageHandler & EntryHandler and get original entry values
         imageHandler = new ImageHandler(this, DetailFragment.TAG);
-        // get picture.diary.lenstofork.Diary.Entry & EntryHandler from database
+        // get Entry & EntryHandler from database
         database = new DatabaseHandler(this);
         Intent arguments = getIntent();
         entryHandler = database.getEntryHandler(arguments.getStringExtra(EXTRA_ENTRY_HANDLER));
@@ -92,6 +93,8 @@ public class EditActivity extends AppCompatActivity{
         captionTxt = (EditText) findViewById(R.id.txt_caption);
         imgCaptionColor = (ImageView) findViewById(R.id.img_caption_color);
         imgCaptionMenu = (ImageView) findViewById(R.id.img_menu_caption);
+        spinnerTitleTxt = (TextView) findViewById(R.id.txt_capt_spinner);
+        captionSpinner = (Spinner) findViewById(R.id.spinner_capt_pos);
 
         // description
         descriptionHeader = (TextView) findViewById(R.id.header_description);
@@ -112,7 +115,7 @@ public class EditActivity extends AppCompatActivity{
 
     /**
      * Initializes the title, caption, captionColor, description, and filepath objects with the
-     * values attached to the picture.diary.lenstofork.Diary.Entry object so that it can be compared to see if any of the values
+     * values attached to the Entry object so that it can be compared to see if any of the values
      * have been changed when the user taps the submitBttn
      */
     private void getOriginalValues(){
@@ -225,7 +228,7 @@ public class EditActivity extends AppCompatActivity{
     }
 
     /**
-     * Gets the values entered and updates the picture.diary.lenstofork.Diary.Entry with the database
+     * Gets the values entered and updates the Entry with the database
      */
     private void submitEntry(){
         boolean hasEntryChanged = false;
@@ -358,12 +361,12 @@ public class EditActivity extends AppCompatActivity{
             captionTxt.setVisibility(View.VISIBLE);
             imgCaptionColor.setVisibility(View.VISIBLE);
             spinnerTitleTxt.setVisibility(View.VISIBLE);
-            captionSpinner.setVisibility(View.VISIBLE);}
+            captionSpinner.setVisibility(View.VISIBLE);
+        }
     }
 
     private void configureCaptionSpinner(){
-        spinnerTitleTxt = (TextView) findViewById(R.id.txt_capt_spinner);
-        captionSpinner = (Spinner) findViewById(R.id.spinner_capt_pos);
+
         // create ArrayAdapter to populate spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.array_caption_position, android.R.layout.simple_spinner_item);

@@ -16,9 +16,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.colorpicker.ColorPickerDialog;
@@ -34,10 +37,11 @@ import picture.diary.lenstofork.Utils.ImageHandler;
 
 public class NewEntryActivity extends AppCompatActivity {
     //widgets
-    private ImageView entryImage;
-    private EditText titleTxt, captionTxt, descriptionTxt;
+    private EditText titleTxt, descriptionTxt, captionTxt;
+    private TextView captionHeader, descriptionHeader, spinnerTitleTxt;
+    private ImageView image, imgCaptionMenu, imgCaptionColor, imgDescriptionMenu;
+    private Spinner captionSpinner;
     private Button submitBttn;
-    private ImageView imgCaptionColor;
 
     //------- Variables
     private static EntryHandler entryHandler;
@@ -45,17 +49,22 @@ public class NewEntryActivity extends AppCompatActivity {
     private String imageFilePath = "";
     private boolean canCopyImages = false;
     private DatabaseHandler database;
+
+    //------- Caption & Description Variables
     private CaptionColor captionColor = CaptionColor.WHITE;
+    private CaptionPosition captionPosition = CaptionPosition.CENTER;
+    private boolean showCaption = false;
+    private boolean showDescription = false;
 
     //------- Constants
-    public static final String TAG = "New picture.diary.lenstofork.Diary.Entry Activity";
-    public static final String EXTRA_ENTRY_HANDLER = "picture.diary.lenstofork.Diary.Entry Handler";
+    public static final String TAG = "New Entry Activity";
+    public static final String EXTRA_ENTRY_HANDLER = "Entry Handler";
     public static final int REQUEST_CODE_READ_PERMISSION = 3;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_entry);
+        setContentView(R.layout.entry_forms);
         checksReadingPermission();
 
         //------ initialize database, entryHandler, imageHandler
@@ -71,19 +80,47 @@ public class NewEntryActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.up_navigation_white);
 
         //-------- Initialize Widgets
-        entryImage = (ImageView) findViewById(R.id.img_entry);
-        entryImage.setOnClickListener(new View.OnClickListener() {
+        // title
+        titleTxt = (EditText) findViewById(R.id.txt_title);
+
+        // caption
+        captionHeader = (TextView) findViewById(R.id.header_caption);
+        captionTxt = (EditText) findViewById(R.id.txt_caption);
+        imgCaptionColor = (ImageView) findViewById(R.id.img_caption_color);
+        imgCaptionMenu = (ImageView) findViewById(R.id.img_menu_caption);
+        spinnerTitleTxt = (TextView) findViewById(R.id.txt_capt_spinner);
+        captionSpinner = (Spinner) findViewById(R.id.spinner_capt_pos);
+        configureCaptionAttributes();
+
+        // description
+        descriptionHeader = (TextView) findViewById(R.id.header_description);
+        descriptionTxt = (EditText) findViewById(R.id.txt_description);
+        imgDescriptionMenu = (ImageView) findViewById(R.id.img_menu_description);
+        imgDescriptionMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // toggles between showing and hiding description options
+                toggleDescriptionMenu();
+            }
+        });
+        descriptionHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleDescriptionMenu();
+            }
+        });
+
+        // image
+        image = (ImageView) findViewById(R.id.image);
+        image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 imageOptionsDialog();
             }
         });
 
-        titleTxt = (EditText) findViewById(R.id.txt_entry_title);
-        captionTxt = (EditText) findViewById(R.id.txt_entry_caption);
-        descriptionTxt = (EditText) findViewById(R.id.txt_entry_description);
-
-        submitBttn = (Button) findViewById(R.id.bttn_submit);
+        // submit button
+        submitBttn = findViewById(R.id.bttn_submit);
         submitBttn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,32 +128,6 @@ public class NewEntryActivity extends AppCompatActivity {
             }
         });
 
-        imgCaptionColor = (ImageView) findViewById(R.id.img_caption_color);
-        imgCaptionColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int[] colors = getResources().getIntArray(R.array.colorPicker);
-
-                final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
-                colorPickerDialog.initialize(R.string.color_picker, colors,
-                        captionColor.getColor(), 4, colors.length);
-                colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.
-                        OnColorSelectedListener() {
-                    @Override
-                    public void onColorSelected(int color) {
-                        colorPickerDialog.setSelectedColor(color);
-                        captionColor = CaptionColor.getCaptionColor(color);
-
-                        // change color of caption icon
-                        Drawable background = ContextCompat.getDrawable(NewEntryActivity
-                                        .this, R.drawable.colored_caption_white);
-                        background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
-                        imgCaptionColor.setImageDrawable(background);
-                    }
-                });
-                colorPickerDialog.show(getFragmentManager(), TAG);
-            }
-        });
     }
 
     //-------- Image Related Methods
@@ -168,6 +179,116 @@ public class NewEntryActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    //--------- Caption & Description Methods
+
+    private void configureCaptionAttributes(){
+        // caption menu
+        imgCaptionMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleCaptionMenu();
+            }
+        });
+        captionHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleCaptionMenu();
+            }
+        });
+
+        // caption color
+        imgCaptionColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int[] colors = getResources().getIntArray(R.array.colorPicker);
+
+                final ColorPickerDialog colorPickerDialog = new ColorPickerDialog();
+                colorPickerDialog.initialize(R.string.color_picker, colors,
+                        captionColor.getColor(), 4, colors.length);
+                colorPickerDialog.setOnColorSelectedListener(new ColorPickerSwatch.
+                        OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int color) {
+                        colorPickerDialog.setSelectedColor(color);
+                        captionColor = CaptionColor.getCaptionColor(color);
+
+                        // change color of caption icon
+                        Drawable background = ContextCompat.getDrawable(NewEntryActivity
+                                .this, R.drawable.colored_caption_white);
+                        background.setColorFilter(captionColor.getColor(), PorterDuff.Mode.SRC_IN);
+                        imgCaptionColor.setImageDrawable(background);
+                    }
+                });
+                colorPickerDialog.show(getFragmentManager(), TAG);
+            }
+        });
+
+        // caption position
+        configureCaptionSpinner();
+    }
+
+    /**
+     * Toggles if the caption options are displaying or not
+     */
+    private void toggleCaptionMenu(){
+        if(showCaption){
+            showCaption = false;
+
+            imgCaptionMenu.setImageResource(R.drawable.arrow_down_black);
+            captionTxt.setVisibility(View.GONE);
+            imgCaptionColor.setVisibility(View.GONE);
+            spinnerTitleTxt.setVisibility(View.GONE);
+            captionSpinner.setVisibility(View.GONE);
+
+        }
+        else{
+            showCaption = true;
+
+            imgCaptionMenu.setImageResource(R.drawable.arrow_up_black);
+            captionTxt.setVisibility(View.VISIBLE);
+            imgCaptionColor.setVisibility(View.VISIBLE);
+            spinnerTitleTxt.setVisibility(View.VISIBLE);
+            captionSpinner.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void configureCaptionSpinner(){
+
+        // create ArrayAdapter to populate spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.array_caption_position, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        captionSpinner.setAdapter(adapter);
+        captionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String captionPosString = (String) parent.getItemAtPosition(position);
+                captionPosition = CaptionPosition.getCaptionPosition(captionPosString);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // set entry's current caption position in the spinner
+        captionSpinner.setSelection(adapter.getPosition(CaptionPosition.CENTER.getValue()));
+    }
+
+    /**
+     * Toggles if the description options are displaying or not
+     */
+    private void toggleDescriptionMenu(){
+        if(showDescription){
+            imgDescriptionMenu.setImageResource(R.drawable.arrow_down_black);
+            descriptionTxt.setVisibility(View.GONE);
+            showDescription = false;
+        }
+        else{
+            imgDescriptionMenu.setImageResource(R.drawable.arrow_up_black);
+            descriptionTxt.setVisibility(View.VISIBLE);
+            showDescription = true;
+        }
+    }
+
     //--------- Helper Methods
 
     /**
@@ -210,7 +331,7 @@ public class NewEntryActivity extends AppCompatActivity {
 
     /**
      * Takes in all the data the user entered (title, caption, and image) and uses to make a new
-     * picture.diary.lenstofork.Diary.Entry object which is added to the current date's EntryHandler
+     * Entry object which is added to the current date's EntryHandler
      */
     private void submitEntry(){
         // create new entry
@@ -244,7 +365,7 @@ public class NewEntryActivity extends AppCompatActivity {
         Double widthDouble = results[0] * .48;
         Double heightDouble = results[1] * .31;
         int minDimension = Math.min(widthDouble.intValue(), heightDouble.intValue());
-        imageHandler.loadIntoImageView(minDimension, minDimension, filepath, entryImage);
+        imageHandler.loadIntoImageView(minDimension, minDimension, filepath, image);
     }
 
     //--------- Fragment Methods
