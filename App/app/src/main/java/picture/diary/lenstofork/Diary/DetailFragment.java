@@ -256,9 +256,8 @@ public class DetailFragment extends Fragment {
                 return true;
 
             case R.id.edit:
-                //newIntent(Activity activity, String entryHandler, int entryIndex)
-                Intent intent = EditActivity.newIntent(getActivity(), entryHandler.getStringDate(),
-                        position);
+                Intent intent = EntryFormsActivity.newIntent(getActivity(),
+                        entryHandler.getStringDate(), position);
                 startActivity(intent);
                 return true;
             case R.id.delete:

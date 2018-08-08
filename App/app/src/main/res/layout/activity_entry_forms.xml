@@ -72,8 +72,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:text="CAPTION"
-                        android:textColor="@android:color/background_dark"
+                        android:textColor="@color/white"
                         android:textStyle="bold" />
                 </RelativeLayout>
 
@@ -205,6 +204,7 @@
                     android:background="@drawable/text_view_border"
                     android:ems="10"
                     android:gravity="top"
+                    android:hint="Description"
                     android:inputType="text"
                     android:paddingLeft="15dp"
                     android:paddingTop="15dp"

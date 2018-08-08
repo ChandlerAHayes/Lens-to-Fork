@@ -2,6 +2,10 @@
     <string name="app_name">Lens to Fork</string>
     <string name="color_picker">Select a Caption Color</string>
 
+    <!-- Toolbar Strings -->
+    <string name="toolbar_new_entry">New Entry</string>
+    <string name="toolbar_edit">Edit Entry</string>
+
     <!-- Radio Caption Strings -->
     <string name="caption_position_title">Caption Position</string>
     <string-array name="array_caption_position">

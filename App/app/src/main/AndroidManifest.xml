@@ -17,8 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Diary.EntryActivity" />
-        <activity android:name=".Diary.NewEntryActivity" />
-        <activity android:name=".Diary.EditActivity" />
+        <activity android:name=".Diary.EntryFormsActivity"/>
 
         <!-- File Provider-->
         <provider

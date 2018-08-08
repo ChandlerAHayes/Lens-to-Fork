@@ -179,7 +179,7 @@ public class DiaryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // go to add new entry page
-                Intent intent = NewEntryActivity.newInstance(getActivity(),
+                Intent intent = EntryFormsActivity.newIntent(getActivity(),
                         entryHandler.getStringDate());
                 startActivity(intent);
             }

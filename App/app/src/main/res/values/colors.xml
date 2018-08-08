@@ -6,7 +6,7 @@
     <color name="dividerColor">#f5f5f5</color>
 
     <!-- Color Picker Colors -->
-    <color name="white">#FFFFFF</color>
+    <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="blue_grey">#5E7C8B</color>
     <color name="grey">#9D9D9D</color>
