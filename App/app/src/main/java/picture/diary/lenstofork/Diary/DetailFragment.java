@@ -177,8 +177,13 @@ public class DetailFragment extends Fragment {
     private void deleteEntry(){
         // remove entry
         entryHandler.removeEntry(position);
-        // update database
-        database.updateEntryHandler(entryHandler);
+        // if there are no entries left, delete entryHandler, otherwise update database
+        if(entryHandler.getNumberOfEntries() == 0){
+            database.deleteEntryHandler(entryHandler);
+        }
+        else{
+            database.updateEntryHandler(entryHandler);
+        }
 
         // return to DiaryActivity
         getActivity().onBackPressed();

@@ -555,7 +555,7 @@ public class EntryFormsActivity extends AppCompatActivity {
 
             // add new entry to database
             entryHandler.addEntry(entry);
-            if(entryHandler.getNumberOfEntries() == 1){
+            if(!database.doesEntryHandlerExist(entryHandler.getStringDate())){
                 database.addEntries(entryHandler);
             }
             else{
