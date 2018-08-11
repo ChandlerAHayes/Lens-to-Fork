@@ -122,8 +122,14 @@ public class EntryFormsActivity extends AppCompatActivity {
         Intent arguments = getIntent();
 
         // get EntryHandler & entry (if in EditMode)
+        String dateStr = arguments.getStringExtra(EXTRA_ENTRY_HANDLER);
         database = new DatabaseHandler(this);
-        entryHandler = database.getEntryHandler(arguments.getStringExtra(EXTRA_ENTRY_HANDLER));
+        if(database.doesEntryHandlerExist(dateStr)){
+            entryHandler = database.getEntryHandler(dateStr);
+        }
+        else{
+            entryHandler = new EntryHandler(dateStr);
+        }
         if(MODE == EDIT_MODE){
             // get entry
             entry = entryHandler.getEntry(arguments.getIntExtra(EXTRA_ENTRY_INDEX, 0));
