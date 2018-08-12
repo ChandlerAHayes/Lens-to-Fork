@@ -210,7 +210,13 @@ public class DiaryFragment extends Fragment {
     private void updateUI(){
         needsUpdating = false; // reset this value
         //update entryHandler
-        entryHandler = database.getEntryHandler(entryHandler.getStringDate());
+        if(database.doesEntryHandlerExist(entryHandler.getStringDate())){
+            entryHandler = database.getEntryHandler(entryHandler.getStringDate());
+        }
+        else{
+            entryHandler = new EntryHandler(entryHandler.getStringDate());
+        }
+
         boolean entriesAreLogged = true;
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
             // set values for entries
