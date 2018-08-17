@@ -98,7 +98,7 @@ public class EntryFormsActivity extends AppCompatActivity {
 
         configureHandlers();
         // ask for reading permission if it has not been granted
-        if(MODE == EDIT_MODE){
+        if(MODE == NEW_MODE){
             checksReadingPermission();
         }
 
