@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import picture.diary.lenstofork.Diary.Entry.CaptionColor;
+import picture.diary.lenstofork.Diary.Entry.CaptionPosition;
 import picture.diary.lenstofork.Diary.Entry.Entry;
 import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 
@@ -110,7 +112,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_DATE, handler.getStringDate());
 
         for(int i=0; i<EntryHandler.ENTRY_LIMIT; i++){
-            // stop when all of the entries are made but have not reached the picture.diary.lenstofork.Diary.Entry limit
+            // stop when all of the entries are made but have not reached the Entry limit
             if(entries[i] == null){
                 break;
             }
@@ -306,7 +308,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * to populate an EntryHandler object with entries.
      *
      * @param id the id of the entry to retrieve
-     * @return an picture.diary.lenstofork.Diary.Entry object
+     * @return an Entry object
      */
     public Entry getEntry(long id){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -339,9 +341,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
 
             //--------- Create Entry
-            Entry entry = new Entry(id, img, title, caption, description);
-            entry.setCaptionColor(colorString);
-            entry.setCaptionPosition(positionString);
+            Entry entry = new Entry(id, img, title, caption, description,
+                    CaptionColor.getCaptionColor(colorString),
+                    CaptionPosition.getCaptionPosition(positionString));
             return entry;
         }
         else{
@@ -352,9 +354,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Returns all of the entries from the picture.diary.lenstofork.Diary.Entry table
+     * Returns all of the entries from the Entry table
      *
-     * @return
+     * @return returns all of the entries from the Entry Table
      */
     public List<Entry> getAllEntries(){
         List<Entry> list = new ArrayList<Entry>();
@@ -388,9 +390,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String positionString = cursor.getString(index);
 
                 //-------- Create Entry
-                Entry entry = new Entry(id, img, title, caption, description);
-                entry.setCaptionColor(colorString);
-                entry.setCaptionPosition(positionString);
+                Entry entry = new Entry(id, img, title, caption, description,
+                        CaptionColor.getCaptionColor(colorString),
+                        CaptionPosition.getCaptionPosition(positionString));
 
                 list.add(entry);
             } while(cursor.moveToNext());
@@ -400,7 +402,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Deletes the row for the given entry from the picture.diary.lenstofork.Diary.Entry table
+     * Deletes the row for the given entry from the Entry table
      *
      * @param entry the entry to be deleted from the database
      * @param db the open connection to the database
@@ -510,10 +512,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 new String[] {tag}, null, null,null, null);
 
         if(cursor.getCount() > 0){
+            cursor.close();
             return true;
         }
         else{
+            cursor.close();
             return false;
         }
+
     }
 }

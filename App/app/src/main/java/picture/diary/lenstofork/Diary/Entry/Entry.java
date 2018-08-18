@@ -12,24 +12,28 @@ public class Entry {
     private CaptionPosition captionPosition;
 
     //------- Constructors
-    public Entry(String filePath, String title, String caption, String description){
+    public Entry(String filePath, String title, String caption, String description,
+                 CaptionColor color, CaptionPosition position)
+    {
         id = null;
         this.filepath = filePath;
         this.title = title;
         this.caption = caption;
         this.description = description;
-        captionColor = CaptionColor.WHITE;
-        captionPosition = CaptionPosition.CENTER;
+        this.captionColor = color;
+        this.captionPosition = position;
     }
 
-    public Entry(Long id, String filepath, String title, String caption, String description){
+    public Entry(Long id, String filepath, String title, String caption, String description,
+                 CaptionColor color, CaptionPosition position)
+    {
         this.id = id;
         this.filepath = filepath;
         this.title = title;
         this.caption = caption;
         this.description = description;
-        captionColor = CaptionColor.WHITE;
-        captionPosition = CaptionPosition.CENTER;
+        this.captionColor = color;
+        this.captionPosition = position;
     }
 
     //-------- Setter & Getters
@@ -87,20 +91,11 @@ public class Entry {
         this.captionColor = color;
     }
 
-    public void setCaptionColor(String colorString){
-        this.captionColor = CaptionColor.getCaptionColor(colorString);
-    }
-
     public CaptionColor getCaptionColor() {
         return captionColor;
     }
 
     // Caption Position
-
-    public void setCaptionPosition(String captionPosition){
-        this.captionPosition = CaptionPosition.getCaptionPosition(captionPosition);
-    }
-
     public void setCaptionPosition(CaptionPosition captionPosition) {
         this.captionPosition = captionPosition;
     }
@@ -108,8 +103,7 @@ public class Entry {
     public CaptionPosition getCaptionPosition() {
         return captionPosition;
     }
-
-
+    
     //-------- Object Methods
 
     @Override

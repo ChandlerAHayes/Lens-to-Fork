@@ -136,9 +136,8 @@ public class EntryFormsActivity extends AppCompatActivity {
 
             // get a copy of the current values in entry
             originalEntry = new Entry(entry.getId(), entry.getImageFilePath(), entry.getTitle(),
-                    entry.getCaption(), entry.getDescription());
-            originalEntry.setCaptionColor(entry.getCaptionColor());
-            originalEntry.setCaptionPosition(entry.getCaptionPosition());
+                    entry.getCaption(), entry.getDescription(), entry.getCaptionColor(),
+                    entry.getCaptionPosition());
         }
 
         // get ImageHandler
@@ -555,9 +554,8 @@ public class EntryFormsActivity extends AppCompatActivity {
             String caption = captionTxt.getText().toString();
             String description = descriptionTxt.getText().toString();
             imageFilePath = imageHandler.getFilepath();
-            Entry entry = new Entry(imageFilePath, title, caption, description);
-            entry.setCaptionColor(captionColor);
-            entry.setCaptionPosition(captionPosition);
+            Entry entry = new Entry(imageFilePath, title, caption, description, captionColor,
+                    captionPosition);
 
             // add new entry to database
             entryHandler.addEntry(entry);
