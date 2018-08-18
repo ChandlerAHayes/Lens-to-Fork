@@ -145,19 +145,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             // get the date and create the EntryHandler object
             EntryHandler handler = new EntryHandler(dateStr);
 
-            int entry0 = cursor.getColumnIndex(KEY_ENTRY0);
-            int entry1 = cursor.getColumnIndex(KEY_ENTRY1);
-            int entry2 = cursor.getColumnIndex(KEY_ENTRY2);
-            int entry3 = cursor.getColumnIndex(KEY_ENTRY3);
-            int entry4 = cursor.getColumnIndex(KEY_ENTRY4);
-            int entry5 = cursor.getColumnIndex(KEY_ENTRY5);
+            int index = cursor.getColumnIndex(KEY_ENTRY0);
+            handler.addEntry(getEntry(cursor.getLong(index)));
 
-            handler.addEntry(getEntry(cursor.getLong(entry0)));
-            handler.addEntry(getEntry(cursor.getLong(entry1)));
-            handler.addEntry(getEntry(cursor.getLong(entry2)));
-            handler.addEntry(getEntry(cursor.getLong(entry3)));
-            handler.addEntry(getEntry(cursor.getLong(entry4)));
-            handler.addEntry(getEntry(cursor.getLong(entry5)));
+            index = cursor.getColumnIndex(KEY_ENTRY1);
+            handler.addEntry(getEntry(cursor.getLong(index)));
+
+            index = cursor.getColumnIndex(KEY_ENTRY2);
+            handler.addEntry(getEntry(cursor.getLong(index)));
+
+            index = cursor.getColumnIndex(KEY_ENTRY3);
+            handler.addEntry(getEntry(cursor.getLong(index)));
+
+            index = cursor.getColumnIndex(KEY_ENTRY4);
+            handler.addEntry(getEntry(cursor.getLong(index)));
+
+            index = cursor.getColumnIndex(KEY_ENTRY5);
+            handler.addEntry(getEntry(cursor.getLong(index)));
 
             cursor.close();
             return handler;
@@ -313,21 +317,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null, null, null, null);
 
         if(cursor.moveToFirst()){
-            int imageIndex = cursor.getColumnIndex(KEY_IMG);
-            int titleIndex = cursor.getColumnIndex(KEY_TITLE);
-            int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
-            int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
-            int positionIndex = cursor.getColumnIndex(KEY_CAPTION_POSITION);
-            int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
+            //-------- Get Entry Attributes
+            int index = cursor.getColumnIndex(KEY_IMG);
+            String img = cursor.getString(index);
 
-            String img = cursor.getString(imageIndex);
-            String title = cursor.getString(titleIndex);
-            String caption = cursor.getString(captionIndex);
-            String description = cursor.getString(descriptionIndex);
-            String colorString = cursor.getString(colorIndex);
-            String positionString = cursor.getString(positionIndex);
+            index = cursor.getColumnIndex(KEY_TITLE);
+            String title = cursor.getString(index);
+
+            index = cursor.getColumnIndex(KEY_CAPTION);
+            String caption = cursor.getString(index);
+
+            cursor.getColumnIndex(KEY_DESCRIPTION);
+            String description = cursor.getString(index);
+
+            index = cursor.getColumnIndex(KEY_CAPTION_COLOR);
+            String colorString = cursor.getString(index);
+
+            index = cursor.getColumnIndex(KEY_CAPTION_POSITION);
+            String positionString = cursor.getString(index);
 
             cursor.close();
+
+            //--------- Create Entry
             Entry entry = new Entry(id, img, title, caption, description);
             entry.setCaptionColor(colorString);
             entry.setCaptionPosition(positionString);
@@ -354,25 +365,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()){
             do{
-                int idIndex = cursor.getColumnIndex(KEY_ID);
-                int imageIndex = cursor.getColumnIndex(KEY_IMG);
-                int titleIndex = cursor.getColumnIndex(KEY_TITLE);
-                int captionIndex = cursor.getColumnIndex(KEY_CAPTION);
-                int colorIndex = cursor.getColumnIndex(KEY_CAPTION_COLOR);
-                int positionIndex = cursor.getColumnIndex(KEY_CAPTION_POSITION);
-                int descriptionIndex = cursor.getColumnIndex(KEY_DESCRIPTION);
+                //-------- Get Entry Attributes
+                int index = cursor.getColumnIndex(KEY_ID);
+                Long id = cursor.getLong(index);
 
-                Long id = cursor.getLong(idIndex);
-                String img = cursor.getString(imageIndex);
-                String title = cursor.getString(titleIndex);
-                String caption = cursor.getString(captionIndex);
-                String colorCaption = cursor.getString(colorIndex);
-                String positionString = cursor.getString(positionIndex);
-                String description = cursor.getString(descriptionIndex);
+                index = cursor.getColumnIndex(KEY_IMG);
+                String img = cursor.getString(index);
 
+                index = cursor.getColumnIndex(KEY_TITLE);
+                String title = cursor.getString(index);
+
+                index = cursor.getColumnIndex(KEY_CAPTION);
+                String caption = cursor.getString(index);
+
+                index = cursor.getColumnIndex(KEY_CAPTION_COLOR);
+                String description = cursor.getString(index);
+
+                index = cursor.getColumnIndex(KEY_CAPTION_POSITION);
+                String colorString = cursor.getString(index);
+
+                cursor.getColumnIndex(KEY_DESCRIPTION);
+                String positionString = cursor.getString(index);
+
+                //-------- Create Entry
                 Entry entry = new Entry(id, img, title, caption, description);
-                entry.setCaptionColor(colorCaption);
+                entry.setCaptionColor(colorString);
                 entry.setCaptionPosition(positionString);
+
                 list.add(entry);
             } while(cursor.moveToNext());
         }

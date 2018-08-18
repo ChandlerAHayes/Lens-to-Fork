@@ -7,10 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.File;
 
+import picture.diary.lenstofork.Diary.Entry.CaptionPosition;
 import picture.diary.lenstofork.Diary.Entry.Entry;
 import picture.diary.lenstofork.Diary.Entry.EntryHandler;
 import picture.diary.lenstofork.R;
@@ -132,14 +134,17 @@ public class DiaryFragment extends Fragment {
      * @param index the index that the entry belongs in
      */
     private void fillInEntryData(Entry entry, final int index){
+        // load image into ImageView
+        String filepath = entry.getImageFilePath();
+        loadImage(filepath, images[index]);
+
         // insert title and caption
         titles[index].setText(entry.getTitle());
         captions[index].setText(entry.getCaption());
         captions[index].setTextColor(entry.getCaptionColor().getColor());
+        moveCaption(entry.getCaptionPosition(), index);
 
-        // load image into ImageView
-        String filepath = entry.getImageFilePath();
-        loadImage(filepath, images[index]);
+
 
         // add onClickListener to view picture.diary.lenstofork.Diary.Entry Details or Edit
         containers[index].setOnClickListener(new View.OnClickListener() {
@@ -151,6 +156,72 @@ public class DiaryFragment extends Fragment {
                 startActivity(intent);
             }
         });
+    }
+
+    /**
+     * Moves the position of the caption's TextView to location the user selected
+     */
+    private void moveCaption(CaptionPosition captionPosition, int widgetIndex){
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout
+                .LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(5, 5, 5, 5);
+
+        int imageViewID = images[widgetIndex].getId();
+
+        switch(captionPosition){
+            case TOP_LEFT:
+                params.addRule(RelativeLayout.ALIGN_TOP, imageViewID);
+                params.addRule(RelativeLayout.ALIGN_LEFT, imageViewID);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case TOP_CENTER:
+                params.addRule(RelativeLayout.ALIGN_TOP, imageViewID);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case TOP_RIGHT:
+                params.addRule(RelativeLayout.ALIGN_TOP, imageViewID);
+                params.addRule(RelativeLayout.ALIGN_RIGHT, imageViewID);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case LEFT_CENTER:
+                params.addRule(RelativeLayout.ALIGN_LEFT,imageViewID);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case CENTER:
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case RIGHT_CENTER:
+                params.addRule(RelativeLayout.ALIGN_RIGHT, imageViewID);
+                params.addRule(RelativeLayout.CENTER_VERTICAL);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case BOTTOM_LEFT:
+                params.addRule(RelativeLayout.ALIGN_BOTTOM, imageViewID);
+                params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case BOTTOM_CENTER:
+                params.addRule(RelativeLayout.ALIGN_BOTTOM, imageViewID);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+
+            case BOTTOM_RIGHT:
+                params.addRule(RelativeLayout.ALIGN_BOTTOM, imageViewID);
+                params.addRule(RelativeLayout.ALIGN_RIGHT, imageViewID);
+                captions[widgetIndex].setLayoutParams(params);
+                break;
+        }
     }
 
     /**

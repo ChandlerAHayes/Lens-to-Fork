@@ -5,15 +5,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="15dp">
 
-    <ImageView
-        android:id="@+id/img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_title"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/add_entry_teal" />
-
     <TextView
         android:id="@+id/txt_title"
         android:layout_width="wrap_content"
@@ -22,13 +13,28 @@
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/txt_caption"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:paddingTop="18dp"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
+        android:layout_below="@+id/txt_title">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/add_entry_teal" />
+
+        <TextView
+            android:id="@+id/txt_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/img"
+            android:layout_margin="5dp"
+            android:text="aXADADa"
+            android:textColor="#050101"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
 </RelativeLayout>
